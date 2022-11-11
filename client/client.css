@@ -1,0 +1,79 @@
+/* Applicable to all pages */
+header {
+    z-index: 5;
+    border-bottom: 3px solid black;
+    top: 0;
+    position: sticky;
+    background-color: #FEF9F3;
+}
+
+.header {
+    width: fit-content;
+}
+
+.header-txt {
+    text-align: center;
+    padding-top: 27px;
+    padding-bottom: 17px;
+    letter-spacing: 10px; 
+    font-weight: bold;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+body {
+    background-color: #FEF9F3;
+    z-index: 0;
+    font-family: Jost;
+}
+
+footer {
+    text-align: center;
+    border-top: 3px solid black;
+    top: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+#sidebar {
+    padding: 10px;
+    overflow-y: scroll;
+    border-right: 3px solid black;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+#body {
+    min-height: 81%;
+    padding-left: 12px;
+}
+
+.card p {
+    margin:auto;
+    margin: 10px;
+    font-size: 100%;
+}
+
+.speaker {
+    cursor: pointer;
+    margin: 0px 0px 10px 0px;
+}
+
+.card {
+    border: 2px solid black;
+    
+    background-color: inherit;
+    padding: auto;
+}
+
+.speaker.spoken {
+    background-color: pink;
+}
