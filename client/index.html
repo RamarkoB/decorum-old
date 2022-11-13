@@ -22,10 +22,29 @@
 		</nav>
 	</header>
 
-	<body class="d-flex flex-column h-100">
-		<section id="body" class="row">
-			<div id="sidebar" class="side col-4 text-center"></div>
-			<div class="side col-8"></div>
+	<body class="d-flex flex-column h-100 mt-auto">
+		<section id="mod" class="row">
+			<div id="speakers" class="side col-4 text-center"></div>
+			<div id="modMain" class="side col-8">
+				<div id="timer" class="countdown-inactive rounded text-center border border-2 border-dark">
+					<div class="timer py-4">
+						<p class="timer-inactive">
+							<input class="timer-min" placeholder="00" maxlength="2" pattern="\d*"></input> Min 
+							<input class="timer-sec" placeholder="00" maxlength="2" pattern="\d*"></input> Sec
+						</p>
+					</div>
+					
+					<!-- Call to actions -->
+					<ul class="list-inline">
+						<li class="list-inline-item">
+							<button type="button" class="btn btn-demo btn-timer-reset">Reset</button>
+						</li>
+						<li class="list-inline-item">
+							<button type="button" class="btn btn-demo btn-timer-multiuse">Start</button>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</section>
 	</body>
 
@@ -36,3 +55,4 @@
 
 <script src="structs.js" type="text/babel"></script>
 <script src="cd.js" type="text/babel"></script>
+<script src="client.js" type="text/babel"></script>

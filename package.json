@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "babel": "babel src -d dist "
+    "babel": "babel client -d dist "
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/RamarkoB/decorum#readme",
   "dependencies": {
     "babel-cli": "^6.26.0",
+    "babel-preset-react": "^6.24.1",
     "babel-preset-react-app": "^3.1.2",
     "express": "^4.18.2",
     "react": "^18.2.0",

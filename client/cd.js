@@ -1,39 +1,67 @@
 let socket = io();
 let el;
+let state;
 
-
-let delegates = [];
-let speakersList = [];
-socket.on("delegateInit", (dels) => {
-  delegates = dels.map((del) => new Delegate(del.name));
-});
-
-socket.on("")
-socket.on("delegateUpdate", (dels) => {
-  delegates = dels.map((del) => new Delegate(del.name, del.attendence));
-  speakersList = new SpeakersList(delegates.map((del) => new Speaker(del)));
-});
-
-
-const root = ReactDOM.createRoot(document.getElementById('sidebar')); 
+const speakers = ReactDOM.createRoot(document.getElementById('speakers')); 
+const timerDiv = ReactDOM.createRoot(document.getElementById('timer')); 
 
 function SpeakerDiv(props) {
-  function speak(){
-    speakersList.list[props.index].speak();
+  function updateAttendence(){
+    if (state.getAttendence(props.index) == Attendence.Absent){
+      state.markPresent(props.index);
+    } else {
+      state.markAbsent(props.index);
+    }
   }
 
-  if (props.spoken){
-    return <div className="card speaker spoken" onClick={speak}><p>{props.name}</p></div>
+  if (props.attendence == Attendence.Absent){
+    return <div className="card speaker spoken" onClick={updateAttendence}><p>{props.name}</p></div>
   } else {
-    return <div className="card speaker" onClick={speak}><p>{props.name}</p></div>
+    return <div className="card speaker" onClick={updateAttendence}><p>{props.name}</p></div>
   }
 }
 
+function TimerDiv(props) {
+  return <div className="timer py-4" key="timer">
+  <p className="timer-inactive">
+    <input placeholder="00" maxLength="2" pattern="\d*"></input> Min 
+    <input placeholder="00" maxLength="2" pattern="\d*"></input> Sec
+  </p>
+</div>
+}
+
+function TimerButtons(props) {
+  function statusCheck(status){
+    if (status = Status.Inactive){
+      return "Start";
+    } else if (status = Status.Active){
+      return "Pause";
+    } else {
+      return "Play";
+    }
+  }
+
+
+  return <ul className="list-inline">
+            <li className="list-inline-item">
+              <button type="button" className="btn btn-demo">Reset</button>
+            </li>
+            <li className="list-inline-item">
+              <button type="button" className="btn btn-demo">{statusCheck(props.status)}</button>
+            </li>
+        </ul>
+}
+
 function tick(){
-  const listItems = speakersList.list.map((del, index) =>
-  <SpeakerDiv spoken={del.spoken} name={del.delegate.name} index={index} key={index}/>
+  const listItems = state.getDelegates().map((del, index) =>
+    <SpeakerDiv attendence={del.attendence} name={del.name} index={index} key={index}/>
   );
-  root.render(listItems);
+  speakers.render(listItems);
+  const timerItems = 
+    [<TimerDiv key="timer"/>,
+    <TimerButtons status={Status.Inactive} key="timerButtons"/>];
+    
+    timerDiv.render(timerItems);
 }
 
 setInterval(tick, 100);
