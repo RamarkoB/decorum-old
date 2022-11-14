@@ -52,12 +52,16 @@ a {
     display: none;
 }
 
-#mod {
+section {
     min-height: 81%;
     padding: 0px 12px;
 }
 
-.card p {
+section:not(.active) {
+    display: none;
+}
+
+.speaker p {
     margin:auto;
     margin: 10px;
     font-size: 100%;
@@ -65,22 +69,26 @@ a {
 
 .speaker {
     cursor: pointer;
-    margin: 0px 0px 10px 0px;
-}
-
-.card {
     border: 2px solid black;
-    
-    background-color: inherit;
-    padding: auto;
+    margin: 0px 0px 10px 0px;
+    border-radius: .25rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-clip: border-box;
 }
 
 .speaker.spoken {
     background-color: pink;
 }
 
-#timer {
+.timerDiv {
     margin: 15px 5px;
+    border-radius: 1rem;
+    border: black 2px solid;
+    text-align: center;
 }
 
 .timer {

@@ -106,6 +106,7 @@ class SpeakersList {
     }
 }
 
+
 //Timer Classes
 const Status = {
     Inactive: 'inactive',
@@ -114,42 +115,81 @@ const Status = {
 }
 
 class Timer {
-    constructor(min, sec) {
-        this.offset = Number(min) * 60 * 1000 + Number(sec) * 1000;
+    constructor() {
+        this.length = {min:0, sec:0};
+        this.offset = 0;
         this.deadline = null;
         this.interval = null;
-        this.status = Status.Active;
+        this.status = Status.Inactive;
     }
 
-    play() {
+    play(deadline) {
         function timerPlay(timer) {
-            function update(){ timer.updateTimer(); }
-            return setInterval(update, 1000);
+            function update(){ timer.update(); }
+            return setInterval(update, 100);
         }
 
-        this.deadline = new Date(Date.parse(new Date()) + this.offset);
+        if (deadline == undefined){
+            this.deadline = new Date(Date.parse(new Date()) + this.offset);        
+        } else {
+            this.deadline = deadline;
+        }
+
         this.interval = timerPlay(this);
         this.status = Status.Active;
 
-        return this.timeLeft();
+        return this.deadline;
     }
 
-    pause() {
+    pause(offset) {
         clearInterval(this.interval);
         this.deadline = null;
         this.interval = null;
         this.status = Status.Paused;
 
-        return this.timeLeft();
+        if (offset != undefined){
+            this.offset = offset;
+        }
+
+        return this.offset;
     }
 
-    updateTimer() {
+    update() {
         this.offset = this.deadline - new Date();
         if (this.offset <= 0) {
             clearInterval(this.interval);
             this.offset = 0;
             this.active = false;
         }
+    }
+
+    set(min, sec){
+        this.length.min = min;
+        this.length.sec = sec;
+        this.offset = Number(this.length.min) * 60 * 1000 + Number(this.length.sec) * 1000;
+    }
+
+    reset() {
+        this.pause();
+        this.offset = Number(this.length.min) * 60 * 1000 + Number(this.length.sec) * 1000;
+        this.status = Status.Paused;
+    }
+
+    write() {
+        this.pause();
+        this.status = Status.Inactive;
+    }
+
+    getStatus() {
+        return this.status;
+    }
+
+    getLength() {
+        return this.length;
+    }
+
+    getDeadline() {
+        return this.deadline;
     }
 
     timeLeft() {
@@ -168,7 +208,7 @@ class State {
         this.dels = delegates.map((del) => new Delegate(del));
         this.speakers = null;
         this.currentSpeaker = null;
-        this.timer = null;
+        this.timer = new Timer();
     }
 
     //State Delegate Methods
@@ -203,13 +243,15 @@ class State {
         socket.emit("markAbsent", num);
     };
 
-    attendenceInit(num, attendence){
+    updateAttendence(num, attendence){
         const del = this.dels[num];
         
         if (attendence == Attendence.Present){
             del.markPresent();
         } else if (attendence = Attendence.Voting) {
             del.markVoting();
+        } else {
+            del.markAbsent();
         }
     }
 
@@ -239,23 +281,60 @@ class State {
 
 
     //State Timer Methods
-    makeTimer(min, sec) {
-        this.timer = new Timer(min,sec);
-        socket.emit("makeTimer", min,sec);
+    setTimer(min, sec) {
+        this.timer.set(min,sec);
+        socket.emit("set", min, sec);
     }
 
     playTimer() {
-        this.timer.play();
-        socket.emit("play");
+        const deadline = this.timer.play();
+        socket.emit("play", deadline);
+    }
+    
+    pauseTimer() {
+        const offset = this.timer.pause();
+        socket.emit("pause", offset);
     }
 
-    pauseTimer() {
-        this.timer.pause();
-        socket.emit("pause");
+    resetTimer() {
+        this.timer.reset();
+        socket.emit("reset");
+    }
+
+    writeTimer() {
+        this.timer.write();
+    }
+
+    getLength(){
+        return this.timer.length;
+    }
+
+    getTimerStatus(){
+        if (this.timer == null) {
+            return Status.Inactive;
+        } else {
+            return this.timer.status;
+        }
     }
 
     getTime() {
-        this.timer.getTime();
+        return this.timer.timeLeft();
+    }
+
+    getDeadline() {
+        return this.timer.getDeadline();
+    }
+
+    updateTimer(cmd, args) {
+        if (cmd == "set") {
+            this.timer.set(args[0], args[1]);
+        } else if (cmd == "play") {
+            this.timer.play(args);
+        } else if (cmd == "pause") {
+            this.timer.pause(args);
+        } else {
+            this.timer.reset();
+        }
     }
 
 }
