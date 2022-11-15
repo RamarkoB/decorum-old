@@ -51,6 +51,7 @@ class Delegate {
 class Speaker {
     constructor() {
         this.delegate = null;
+        this.hasDelegate = false;
         this.spoken = false;
     }
 
@@ -62,6 +63,10 @@ class Speaker {
     removeDelegate() {
         this.delegate.removeTimeSpoken();
         this.delegate = null;
+    }
+
+    hasDelegate(){
+        return this.hasDelegate;
     }
 
     getName(){
@@ -202,6 +207,15 @@ class Timer {
     }
 }
 
+//Page
+const Page = {
+    delegates: "delegates",
+    motions: "motions",
+    directives: "directives",
+    mod: "mod",
+    unmod: "unmod",
+}
+
 //State
 class State {
     constructor(delegates){
@@ -209,6 +223,8 @@ class State {
         this.speakers = null;
         this.currentSpeaker = null;
         this.timer = new Timer();
+        this.page = Page.delegates;
+        document.getElementById(this.page).classList.add("active");
     }
 
     //State Delegate Methods
@@ -253,6 +269,16 @@ class State {
         } else {
             del.markAbsent();
         }
+    }
+
+    numPresent() {
+        let count = 0;
+        this.dels.forEach(del => {
+            if (del.getAttendence() == Attendence.Present) {
+                count += 1;
+            }
+        });
+        return count;
     }
 
 
@@ -337,4 +363,24 @@ class State {
         }
     }
 
+    //Page Method
+    toPage(page) {
+        const oldPage = this.page;
+        this.page = page;
+        document.getElementById(oldPage).classList.remove("active");
+        document.getElementById(this.page).classList.add("active");
+    }
+
+    getOtherPages() {
+        
+    }
+}
+
+//Motions
+const Motion = {
+    Introduce: "Introduce Directives",
+    Moderated: "Moderated Caucus",
+    Unmoderated: "Unmoderated Caucus",
+    StrawPoll: "Straw Poll",
+    RoundRobin: "Round Robin"
 }

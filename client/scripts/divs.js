@@ -1,4 +1,4 @@
-function SpeakerDiv(props) {
+function DelegateDiv(props) {
     function updateAttendence(){
       if (state.getAttendence(props.index) == Attendence.Absent){
         state.markPresent(props.index);
@@ -8,12 +8,42 @@ function SpeakerDiv(props) {
     }
   
     if (props.attendence == Attendence.Absent){
+      return <div className="card delegate absent" onClick={updateAttendence}><p>{props.name}</p></div>
+    } else {
+      return <div className="card delegate" onClick={updateAttendence}><p>{props.name}</p></div>
+    }
+}
+
+function QuorumDiv() {
+    const numPresent = state.numPresent();
+    
+    return   <div>
+                <p>There are {numPresent} Delegates</p>
+                <p>A Simple Majority requires {Math.round(numPresent * 1/2)} Delegates</p>
+                <p>A 2/3 Majority requires {Math.round(numPresent * 2/3)} Delegates</p>
+            </div>
+}
+
+function MotionDiv() {
+    return <div className="card motion"><p>{props.motion}</p></div>
+}
+
+function SpeakerDiv(props) {
+    function updateAttendence(){
+      if (state.getAttendence(props.index) == Attendence.Absent){
+        state.markPresent(props.index);
+      } else {
+        state.markAbsent(props.index);
+      }
+    }
+  
+    if (props.spoken == "yes"){
       return <div className="speaker spoken" onClick={updateAttendence}><p>{props.name}</p></div>
     } else {
       return <div className="card speaker" onClick={updateAttendence}><p>{props.name}</p></div>
     }
-  }
-  
+}
+
 function TimerDiv(props) {
 function write(){
     state.writeTimer();
@@ -92,4 +122,43 @@ return  <div className="timerDiv">
         </div>
     
 
+}
+
+function Footer(props) {
+    function parse(){
+        if (props.page == Page.delegates) {
+            return "Delegates";
+        } else if (props.page == Page.directives) {
+            return "Directives";
+        } else if (props.page == Page.mod) {
+            return "Moderated Caucus"
+        } else if (props.page == Page.unmod) {
+            return "Unmoderated Caucus"
+        } else if (props.page == Page.motions) {
+            return "Motions"
+        }
+    }
+    
+    const motionsDropdown = Object.values(Page)
+        .filter(page => {if (page == props.page){return false;} return true;})
+        .map(page =>  <a className="dropdown-item text-center text-uppercase" onClick={() => state.toPage(page)} key={page}>{page}</a>)
+
+    return  <div className="dropdown">
+                <a href="#" data-bs-toggle="dropdown"><h1 className="header-txt fw-bold text-uppercase">{parse()}</h1></a>
+                <div className="dropdown-menu">
+                    {motionsDropdown}
+                </div>
+            </div>
+}
+
+function MainDiv(props) {
+    if (props.page == Page.mod) {
+        const speakers = state.getDelegates().map((del, index) =>
+            <SpeakerDiv attendence={del.attendence} name={del.name} index={index} key={index}/>
+        );
+        return <div id="mod" className="row active">
+                    <div id="speakers" className="side col-4 text-center"> {speakers} </div>
+                    <div id="modMain" className="side col-8"><TimerDiv section="mod"/></div>
+                </div>
+    }
 }

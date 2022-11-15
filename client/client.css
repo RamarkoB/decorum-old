@@ -23,6 +23,8 @@ header {
 }
 
 
+
+
 body {
     background-color: #FEF9F3;
     z-index: 0;
@@ -35,11 +37,16 @@ footer {
     top: 0;
 }
 
+.dropdown {
+    width: fit-content;
+    margin: auto;
+}
+
 a {
     text-decoration: none;
 }
 
-#speakers {
+#speakers, #rollCall, #motionsList {
     height: 100%;
     padding: 10px;
     overflow-y: scroll;
@@ -48,7 +55,7 @@ a {
     scrollbar-width: none;  /* Firefox */
 }
 
-#speakers::-webkit-scrollbar {
+#speakers::-webkit-scrollbar,#rollCall::-webkit-scrollbar, #motionsList::-webkit-scrollbar  {
     display: none;
 }
 
@@ -61,26 +68,20 @@ section:not(.active) {
     display: none;
 }
 
-.speaker p {
+.speaker p, .delegate p, .motion p {
     margin:auto;
     margin: 10px;
     font-size: 100%;
 }
 
-.speaker {
+.speaker, .delegate, .motion {
+    background: inherit;
     cursor: pointer;
     border: 2px solid black;
     margin: 0px 0px 10px 0px;
-    border-radius: .25rem;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-    background-clip: border-box;
 }
 
-.speaker.spoken {
+.speaker.spoken, .delegate.absent {
     background-color: pink;
 }
 
