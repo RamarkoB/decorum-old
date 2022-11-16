@@ -14,7 +14,7 @@ socket.on("markAbsent", (index) => {
 });
 
 socket.on("set", (min, sec) => {
-    state.updateTimer("set", (min, sec));
+    state.updateTimer("set", [min, sec]);
     console.log("Timer Update: Set timer to (" + min + ":" + sec + ")" );
 })
 
