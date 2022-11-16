@@ -35,7 +35,6 @@ class Delegate {
         return this.timesSpoken
     }
 
-
     markPresent(){
         this.attendence = Attendence.Present;
     }
@@ -62,13 +61,14 @@ class Delegate {
 class Speaker {
     constructor() {
         this.delegate = null;
-        this.hasDelegate = false;
+        this.hasDel = false;
         this.spoken = false;
     }
 
     addDelegate(del) {
         this.delegate = del;
-        this.delegate.addTimeSpoken();
+        this.hasDel = true;
+        // this.delegate.addTimeSpoken();
     }
 
     removeDelegate() {
@@ -77,7 +77,7 @@ class Speaker {
     }
 
     hasDelegate(){
-        return this.hasDelegate;
+        return this.hasDel;
     }
 
     getDelegate(){
@@ -85,7 +85,7 @@ class Speaker {
     }
 
     getName(){
-        if (this.hasDelegate) {
+        if (this.hasDel) {
             return this.delegate.getName();
         } else {
             return "None";
@@ -130,11 +130,11 @@ class SpeakersList {
 
     nextSpeaker() {
         if (this.speakernum > 0) {
-            this.list[this.speakerNum].speak();
+            this.listSpeakers[this.speakerNum].speak();
         }
 
         this.speakerNum++;
-        return this.list[this.speakerNum - 1];
+        return this.listSpeakers[this.speakerNum - 1];
     }
 }
 
@@ -234,6 +234,15 @@ class Timer {
     }
 }
 
+//Page
+const Page = {
+    delegates: "delegates",
+    motions: "motions",
+    directives: "directives",
+    mod: "mod",
+    unmod: "unmod",
+}
+
 //State
 class State {
     constructor(delegates){
@@ -241,6 +250,7 @@ class State {
         this.speakers = null;
         this.currentSpeaker = null;
         this.timer = new Timer();
+        this.page = Page.delegates;
     }
 
     //State Delegate Methods
@@ -294,11 +304,32 @@ class State {
         return count;
     }
 
+    getPresent() {
+        let present = [];
+        this.dels.forEach((del) => {
+            if (del.getAttendence() == Attendence.Present) {
+                present.push(del);
+            }
+        });
+        return present;
+    }
 
 
     //State Speaker Methods
     makeSpeakersList(num){
         this.speakers = new SpeakersList(num);
+    }
+
+    addSpeaker(i, delnum) {
+        this.speakers.addDelegate(i, this.dels[delnum]);
+    }
+
+    removeSpeaker(num) {
+        this.speakers.removeDelegate(num);
+    }
+
+    nextSpeaker(){
+        this.currentSpeaker = this.getSpeakersList().nextSpeaker();
     }
 
     getSpeakersList(){
@@ -318,19 +349,6 @@ class State {
             return "None";
         }
         return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
-    }
-
-    addSpeaker(i, delnum) {
-        this.speakers.addDelegate(i, this.dels[delnum]);
-    }
-
-    removeSpeaker(num) {
-        this.speakers.removeDelegate(num);
-    }
-
-    nextSpeaker(){
-        this.currentSpeaker.nextSpeaker();
-        return this.currentSpeaker.getName();
     }
 
     updateSpeakers(cmd, args){
@@ -399,6 +417,16 @@ class State {
         }
     }
 
+    //Page Methods
+    toPage(page) {
+        const oldPage = this.page;
+        this.page = page;
+    }
+
+    getOtherPages() {
+        return Object.values(Page).filter(page => {if (page == this.page){return false;} return true;})
+    }
+
     //Motion Methods
     genMod(minutes, speakingTime){
         const seconds = minutes * 60;
@@ -408,18 +436,11 @@ class State {
     
         const speakers = Math.round(seconds / speakingTime);
         this.setTimer(0, speakingTime);
+        this.pauseTimer();
         this.makeSpeakersList(speakers);
     }
 }
 
-//Motions
-const Motion = {
-    Introduce: "Introduce Directives",
-    Moderated: "Moderated Caucus",
-    Unmoderated: "Unmoderated Caucus",
-    StrawPoll: "Straw Poll",
-    RoundRobin: "Round Robin"
-}
 
 
 let delNames = ["Carolyn", "Joseph", "Jingwen", "Bertrand", "Laura", "Christine", "Ramarko", "Ariel", "Marcos", "Helen", "Nina", "Zane", "Pascual", "Danny"];
@@ -427,7 +448,7 @@ let state = new State(delNames);
 
 io.on('connection', (socket) => {
 
-    //Initalize Client State
+  //Initalize Client State
   socket.emit("stateInit", delNames);
   state.getDelegates().map((del, index) => {
     attendence = (del).getAttendence();
@@ -438,9 +459,18 @@ io.on('connection', (socket) => {
   if (state.getTimerStatus() == Status.Active) {
     socket.emit("play", state.getDeadline());
   } else if (state.getTimerStatus() == Status.Paused) {
-    socket.emit("pause", state.timeLeft().total);
+    socket.emit("pause", state.getTime().total);
   } else {
     socket.broadcast.emit("set", state.getLength().min, state.getLength().sec);
+  }
+
+  if (state.getSpeakersList()) {
+    socket.emit("makeSpeakersList", state.getSpeakersList().numSpeakers);
+    state.getSpeakers().forEach((speaker, index) => {
+        if(speaker.hasDelegate()) {
+            socket.emit("addSpeaker", index, state.getDelegates().indexOf(speaker.getDelegate()));
+        }
+    });
   }
 
   socket.on("markPresent", (index) => {
@@ -480,19 +510,19 @@ io.on('connection', (socket) => {
   })
 
   socket.on("makeSpeakersList", (num) => {
-    state.updateSpeakers("makeSpeakersList", num);
+    state.makeSpeakersList(num);
     console.log("Speakers Update: Generated Speakers list with " + num + " speakers");
     socket.broadcast.emit("makeSpeakersList", num);
   });
 
   socket.on("addSpeaker", (i, delnum) => {
-    state.updateSpeakers("addSpeaker", (i, delnum));
-    console.log("Speakers Update: Speaker" + i +  "is" + state.getName(delnum));
+    state.addSpeaker(i, delnum);
+    console.log("Speakers Update: Speaker " + i +  " is " + state.getName(delnum));
     socket.broadcast.emit("addSpeaker", i, delnum);
   });
 
   socket.on("removeSpeaker", (num) => {
-    state.updateSpeakers("removeSpeaker", num);
+    state.removeSpeaker(num);
     console.log("Speakers Update: Removed" + state.getName(num) + "from speakers list");
     socket.broadcast.emit("removeSpeaker", num);
   });

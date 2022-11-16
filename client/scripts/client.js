@@ -35,12 +35,13 @@ socket.on("set", (min, sec) => {
 
   socket.on("makeSpeakersList", (num) => {
     state.updateSpeakers("makeSpeakersList", num);
-    console.log("Speakers Update: Generated Speakers list with " + num + "speakers");
+    console.log("Speakers Update: Generated Speakers list with " + num + " speakers");
   });
 
   socket.on("addSpeaker", (i, delnum) => {
-    state.updateSpeakers("addSpeaker", (i, delnum));
-    console.log("Speakers Update: Speaker" + i +  "is" + state.getName(delnum));
+    // state.addSpeaker(i, delnum);
+    state.updateSpeakers("addSpeaker", [i, delnum]);
+    console.log("Speakers Update: Speaker " + i +  " is " + state.getName(delnum));
   });
 
   socket.on("removeSpeaker", (num) => {

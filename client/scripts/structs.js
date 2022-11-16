@@ -50,13 +50,14 @@ class Delegate {
 class Speaker {
     constructor() {
         this.delegate = null;
-        this.hasDelegate = false;
+        this.hasDel = false;
         this.spoken = false;
     }
 
     addDelegate(del) {
         this.delegate = del;
-        this.delegate.addTimeSpoken();
+        this.hasDel = true;
+        // this.delegate.addTimeSpoken();
     }
 
     removeDelegate() {
@@ -65,7 +66,7 @@ class Speaker {
     }
 
     hasDelegate(){
-        return this.hasDelegate;
+        return this.hasDel;
     }
 
     getDelegate(){
@@ -73,7 +74,7 @@ class Speaker {
     }
 
     getName(){
-        if (this.hasDelegate) {
+        if (this.hasDel) {
             return this.delegate.getName();
         } else {
             return "None";
@@ -231,6 +232,15 @@ const Page = {
     unmod: "unmod",
 }
 
+//Motions
+const Motion = {
+    Introduce: "Introduce Directives",
+    Moderated: "Moderated Caucus",
+    Unmoderated: "Unmoderated Caucus",
+    StrawPoll: "Straw Poll",
+    RoundRobin: "Round Robin"
+}
+
 //State
 class State {
     constructor(delegates){
@@ -239,7 +249,7 @@ class State {
         this.currentSpeaker = null;
         this.timer = new Timer();
         this.page = Page.delegates;
-        document.getElementById(this.page).classList.add("active");
+        this.toPage(this.page);
     }
 
     //State Delegate Methods
@@ -274,18 +284,6 @@ class State {
         socket.emit("markAbsent", num);
     };
 
-    updateAttendence(num, attendence){
-        const del = this.dels[num];
-        
-        if (attendence == Attendence.Present){
-            del.markPresent();
-        } else if (attendence = Attendence.Voting) {
-            del.markVoting();
-        } else {
-            del.markAbsent();
-        }
-    }
-
     numPresent() {
         let count = 0;
         this.dels.forEach(del => {
@@ -298,7 +296,7 @@ class State {
 
     getPresent() {
         let present = [];
-        this.dels.forEach(del => {
+        this.dels.forEach((del) => {
             if (del.getAttendence() == Attendence.Present) {
                 present.push(del);
             }
@@ -306,6 +304,17 @@ class State {
         return present;
     }
 
+    updateAttendence(num, attendence){
+        const del = this.dels[num];
+        
+        if (attendence == Attendence.Present){
+            del.markPresent();
+        } else if (attendence = Attendence.Voting) {
+            del.markVoting();
+        } else {
+            del.markAbsent();
+        }
+    }
 
 
     //State Speaker Methods
@@ -419,7 +428,7 @@ class State {
         }
     }
 
-    //Page Method
+    //Page Methods
     toPage(page) {
         const oldPage = this.page;
         this.page = page;
@@ -428,7 +437,7 @@ class State {
     }
 
     getOtherPages() {
-        
+        return Object.values(Page).filter(page => {if (page == this.page){return false;} return true;})
     }
 
     //Motion Methods
@@ -440,15 +449,7 @@ class State {
     
         const speakers = Math.round(seconds / speakingTime);
         this.setTimer(0, speakingTime);
+        this.pauseTimer();
         this.makeSpeakersList(speakers);
     }
-}
-
-//Motions
-const Motion = {
-    Introduce: "Introduce Directives",
-    Moderated: "Moderated Caucus",
-    Unmoderated: "Unmoderated Caucus",
-    StrawPoll: "Straw Poll",
-    RoundRobin: "Round Robin"
 }

@@ -69,6 +69,10 @@ a {
     display: none;
 }
 
+.dropdown-item {
+    cursor: pointer;
+}
+
 section {
     min-height: 81%;
     padding: 0px 12px;

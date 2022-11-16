@@ -30,7 +30,8 @@ function MotionDiv() {
 
 function SpeakerDiv(props) {
     function changeDel(del){
-        state.getSpeakers()[props.index].addDelegate(del);
+        const index = state.getDelegates().indexOf(del);
+        state.addSpeaker(props.index, index);
     }
 
     const present = state.getPresent();
