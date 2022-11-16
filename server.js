@@ -439,7 +439,30 @@ class State {
 }
 
 
-let delNames = ["Carolyn", "Joseph", "Jingwen", "Bertrand", "Laura", "Christine", "Ramarko", "Ariel", "Marcos", "Helen", "Nina", "Zane", "Pascual", "Danny"];
+let delNames = ['Alex Obtre Lumumba',
+'Amb. Ernest Niyokindi',
+'Amb. Francois Nkulikiyimfura',
+'Amb. Jean Tambu Mikuma',
+'Amb. Samwel Shelukundo',
+'Christophe Bazivamo',
+'Dr. Anthony L. Kafumbe',
+'Dr. James Otieno Jowi',
+'Dr. Kevit Desai',
+'Dr. Novat Twungubumwe',
+'Dr. Patrick Njoroge',
+'Emile Nguza Arao',
+'Eng. Steven D.M. Mlote',
+'H.E. Ms. Doreen Ruth Amule',
+'H.E. Prof. Judy Wakhungu',
+'Hon. Amb. Ezéchiel Nibigira',
+'Justice Nestor Kayobera',
+'Kenneth A. Bagamuhunda',
+'Lilian K. Mukoronia',
+'Muyambi Fortunate',
+'Prof. Gaspard Banyankimbona',
+'Rt. Hon Martin Ngoga',
+'Vivienne Yeda Apopo',
+'Yufnalis N. Okubo',];
 let state = new State(delNames);
 
 io.on('connection', (socket) => {
@@ -532,5 +555,5 @@ io.on('connection', (socket) => {
 
 
 http.listen(process.env.PORT, function(){
-    console.log('listening on *:3000');
+    console.log('listening on *:', process.env.PORT);
 });
