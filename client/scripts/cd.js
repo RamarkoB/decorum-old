@@ -3,32 +3,33 @@ let el;
 let state;
 
 // const root = ReactDOM.createRoot(document.getElementById('root')); 
-const rollCall = ReactDOM.createRoot(document.getElementById('rollCall')); 
+const delegatesList = ReactDOM.createRoot(document.getElementById('delegatesList')); 
 const quorum = ReactDOM.createRoot(document.getElementById('quorum')); 
 const motionsList = ReactDOM.createRoot(document.getElementById('motionsList')); 
-const speakers = ReactDOM.createRoot(document.getElementById('speakers')); 
+const speakersList = ReactDOM.createRoot(document.getElementById('speakersList')); 
 const modMain = ReactDOM.createRoot(document.getElementById('modMain')); 
 const unmodMain = ReactDOM.createRoot(document.getElementById('unmodMain')); 
 const footer = ReactDOM.createRoot(document.getElementById('footer')); 
 
 function tick(){
-  const listItems = state.getDelegates().map((del, index) =>
+  //delegates tab
+  const delegates = state.getDelegates().map((del, index) =>
     <DelegateDiv attendence={del.attendence} name={del.name} index={index} key={index}/>
   );
-
-  const motions = Object.values(Motion).map((motion) => {
-    <MotionDiv attendence={Attendence.Present} name={motion} />
-  })
-
-  // console.log(motions);
-
-  rollCall.render(listItems);
+  delegatesList.render(delegates);
   quorum.render(<QuorumDiv />)
-  speakers.render(listItems);
-  motionsList.render(motions);
+
+  const speakers = state.getSpeakers().map((speaker, index) =>
+    <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
+  );
+  speakersList.render(speakers);
   modMain.render(<TimerDiv section="mod"/>);
+
+  //unmod tab
   unmodMain.render(<TimerDiv section="unmod"/>);
-  footer.render(<Footer page={state.page} />);
+
+  //footer
+  footer.render(<FooterDiv page={state.page}/>);
     // root.render(<MainDiv page={Page.mod}/>);
 }
 

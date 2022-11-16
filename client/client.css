@@ -37,7 +37,7 @@ footer {
     top: 0;
 }
 
-.dropdown {
+#footerDiv {
     width: fit-content;
     margin: auto;
 }
@@ -46,7 +46,17 @@ a {
     text-decoration: none;
 }
 
-#speakers, #rollCall, #motionsList {
+.dropdown-menu {
+    border: 2px black solid;
+    background: #FEF9F3;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    background-color: black;
+}
+
+#speakersList, #delegatesList, #motionsList {
     height: 100%;
     padding: 10px;
     overflow-y: scroll;
@@ -55,7 +65,7 @@ a {
     scrollbar-width: none;  /* Firefox */
 }
 
-#speakers::-webkit-scrollbar,#rollCall::-webkit-scrollbar, #motionsList::-webkit-scrollbar  {
+#speakersList::-webkit-scrollbar,#delegatesList::-webkit-scrollbar, #motionsList::-webkit-scrollbar  {
     display: none;
 }
 
@@ -69,6 +79,7 @@ section:not(.active) {
 }
 
 .speaker p, .delegate p, .motion p {
+    color:black;
     margin:auto;
     margin: 10px;
     font-size: 100%;

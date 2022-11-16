@@ -62,6 +62,7 @@ class Delegate {
 class Speaker {
     constructor() {
         this.delegate = null;
+        this.hasDelegate = false;
         this.spoken = false;
     }
 
@@ -75,12 +76,28 @@ class Speaker {
         this.delegate = null;
     }
 
+    hasDelegate(){
+        return this.hasDelegate;
+    }
+
+    getDelegate(){
+        return this.delegate;
+    }
+
     getName(){
-        return this.delegate.getName();
+        if (this.hasDelegate) {
+            return this.delegate.getName();
+        } else {
+            return "None";
+        }
     }
 
     speak() {
         this.spoken = true;
+    }
+
+    hasSpoken(){
+        return this.spoken;
     }
 }
 
@@ -102,6 +119,10 @@ class SpeakersList {
     removeDelegate(i, del) {
         this.listSpeakers[i].removeDelegate(del);
     }
+
+    // getName(num) {
+    //     return this.listSpeakers[num].getName();
+    // }
 
     hasNext(){
         return (this.speakerNum < this.NumSpeakers);
@@ -134,26 +155,35 @@ class Timer {
         this.status = Status.Inactive;
     }
 
-    play() {
+    play(deadline) {
         function timerPlay(timer) {
             function update(){ timer.update(); }
             return setInterval(update, 100);
         }
 
-        this.deadline = new Date(Date.parse(new Date()) + this.offset);
+        if (deadline == undefined){
+            this.deadline = new Date(Date.parse(new Date()) + this.offset);        
+        } else {
+            this.deadline = deadline;
+        }
+
         this.interval = timerPlay(this);
         this.status = Status.Active;
 
-        return this.timeLeft();
+        return this.deadline;
     }
 
-    pause() {
+    pause(offset) {
         clearInterval(this.interval);
         this.deadline = null;
         this.interval = null;
         this.status = Status.Paused;
 
-        return this.timeLeft();
+        if (offset != undefined){
+            this.offset = offset;
+        }
+
+        return this.offset;
     }
 
     update() {
@@ -170,7 +200,6 @@ class Timer {
         this.length.sec = sec;
         this.offset = Number(this.length.min) * 60 * 1000 + Number(this.length.sec) * 1000;
     }
-
 
     reset() {
         this.pause();
@@ -191,7 +220,7 @@ class Timer {
         return this.length;
     }
 
-    getDeadline(){
+    getDeadline() {
         return this.deadline;
     }
 
@@ -255,6 +284,16 @@ class State {
         }
     }
 
+    numPresent() {
+        let count = 0;
+        this.dels.forEach(del => {
+            if (del.getAttendence() == Attendence.Present) {
+                count += 1;
+            }
+        });
+        return count;
+    }
+
 
 
     //State Speaker Methods
@@ -262,8 +301,27 @@ class State {
         this.speakers = new SpeakersList(num);
     }
 
-    addSpeaker(speaker, delegate) {
-        this.speakers.addDelegate(speaker, delegate);
+    getSpeakersList(){
+        return this.speakers;
+    }
+
+    getSpeakers(){
+        if (this.speakers == null){
+            return [];
+        } else {
+            return this.speakers.listSpeakers;
+        }
+    }
+
+    getSpeaker(num){
+        if (this.getSpeakersList().listSpeakers[num].getDelegate() == null) {
+            return "None";
+        }
+        return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
+    }
+
+    addSpeaker(i, delnum) {
+        this.speakers.addDelegate(i, this.dels[delnum]);
     }
 
     removeSpeaker(num) {
@@ -271,8 +329,20 @@ class State {
     }
 
     nextSpeaker(){
-        this.currentSpeaker = speakersList.nextSpeaker();
+        this.currentSpeaker.nextSpeaker();
         return this.currentSpeaker.getName();
+    }
+
+    updateSpeakers(cmd, args){
+        if (cmd == "makeSpeakersList") {
+            this.speakers = new SpeakersList(args);
+        } else if (cmd == "addSpeaker") {
+            this.speakers.addDelegate(args[0], this.dels[args[1]]);
+        } else if (cmd = "removeSpeaker"){
+            this.speakers.removeDelegate(args);
+        } else if (cmd = "nextSpeaker") {
+            this.currentSpeaker.nextSpeaker();
+        }
     }
 
 
@@ -284,7 +354,7 @@ class State {
     playTimer() {
         this.timer.play();
     }
-
+    
     pauseTimer() {
         this.timer.pause();
     }
@@ -301,10 +371,6 @@ class State {
         return this.timer.length;
     }
 
-    getDeadline() {
-        return this.timer.getDeadline();
-    }
-
     getTimerStatus(){
         if (this.timer == null) {
             return Status.Inactive;
@@ -317,6 +383,42 @@ class State {
         return this.timer.timeLeft();
     }
 
+    getDeadline() {
+        return this.timer.getDeadline();
+    }
+
+    updateTimer(cmd, args) {
+        if (cmd == "set") {
+            this.timer.set(args[0], args[1]);
+        } else if (cmd == "play") {
+            this.timer.play(args);
+        } else if (cmd == "pause") {
+            this.timer.pause(args);
+        } else {
+            this.timer.reset();
+        }
+    }
+
+    //Motion Methods
+    genMod(minutes, speakingTime){
+        const seconds = minutes * 60;
+        if (seconds % speakingTime != 0) {
+            console.error("The number of minutes is not divisible by the number of speakers");
+        }
+    
+        const speakers = Math.round(seconds / speakingTime);
+        this.setTimer(0, speakingTime);
+        this.makeSpeakersList(speakers);
+    }
+}
+
+//Motions
+const Motion = {
+    Introduce: "Introduce Directives",
+    Moderated: "Moderated Caucus",
+    Unmoderated: "Unmoderated Caucus",
+    StrawPoll: "Straw Poll",
+    RoundRobin: "Round Robin"
 }
 
 
@@ -374,8 +476,32 @@ io.on('connection', (socket) => {
   socket.on("reset", () => {
     state.resetTimer();
     console.log("Timer Update: Reset timer to (" + state.getLength().min + ":" + state.getLength().sec + ")" );
-    console.log(state.timer);
+    socket.broadcast.emit("reset");
   })
+
+  socket.on("makeSpeakersList", (num) => {
+    state.updateSpeakers("makeSpeakersList", num);
+    console.log("Speakers Update: Generated Speakers list with " + num + " speakers");
+    socket.broadcast.emit("makeSpeakersList", num);
+  });
+
+  socket.on("addSpeaker", (i, delnum) => {
+    state.updateSpeakers("addSpeaker", (i, delnum));
+    console.log("Speakers Update: Speaker" + i +  "is" + state.getName(delnum));
+    socket.broadcast.emit("addSpeaker", i, delnum);
+  });
+
+  socket.on("removeSpeaker", (num) => {
+    state.updateSpeakers("removeSpeaker", num);
+    console.log("Speakers Update: Removed" + state.getName(num) + "from speakers list");
+    socket.broadcast.emit("removeSpeaker", num);
+  });
+
+  socket.on("nextSpeaker", () => {
+    state.updateSpeakers("nextSpeaker");
+    console.log("Speakers Update: Next Speaker"); //return to add more
+    socket.broadcast.emit("nextSpeaker", i, delnum);
+  });
 });
 
 

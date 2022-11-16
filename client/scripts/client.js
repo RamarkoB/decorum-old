@@ -32,3 +32,23 @@ socket.on("set", (min, sec) => {
     state.updateTimer("reset");
     console.log("Timer Update: Reset timer to (" + state.getLength().min + ":" + state.getLength().sec + ")" );
   })
+
+  socket.on("makeSpeakersList", (num) => {
+    state.updateSpeakers("makeSpeakersList", num);
+    console.log("Speakers Update: Generated Speakers list with " + num + "speakers");
+  });
+
+  socket.on("addSpeaker", (i, delnum) => {
+    state.updateSpeakers("addSpeaker", (i, delnum));
+    console.log("Speakers Update: Speaker" + i +  "is" + state.getName(delnum));
+  });
+
+  socket.on("removeSpeaker", (num) => {
+    state.updateSpeakers("removeSpeaker", num);
+    console.log("Speakers Update: Removed" + state.getName(num) + "from speakers list");
+  });
+
+  socket.on("nextSpeaker", () => {
+    state.updateSpeakers("nextSpeaker");
+    console.log("Speakers Update: Next Speaker"); //return to add more
+  });

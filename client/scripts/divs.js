@@ -29,19 +29,25 @@ function MotionDiv() {
 }
 
 function SpeakerDiv(props) {
-    function updateAttendence(){
-      if (state.getAttendence(props.index) == Attendence.Absent){
-        state.markPresent(props.index);
-      } else {
-        state.markAbsent(props.index);
-      }
+    function changeDel(del){
+        state.getSpeakers()[props.index].addDelegate(del);
     }
-  
-    if (props.spoken == "yes"){
-      return <div className="speaker spoken" onClick={updateAttendence}><p>{props.name}</p></div>
-    } else {
-      return <div className="card speaker" onClick={updateAttendence}><p>{props.name}</p></div>
-    }
+
+    const present = state.getPresent();
+    const presentDels = present.map(del => <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
+        {del.getName()}
+        </a>)
+
+    return  <div className="dropdown">
+                <a href="#" data-bs-toggle="dropdown">
+                    <div className="card speaker">
+                        <p>{props.name}</p>
+                    </div>
+                </a>
+                <div className="dropdown-menu">
+                    {presentDels}
+                </div>
+            </div>
 }
 
 function TimerDiv(props) {
@@ -124,7 +130,7 @@ return  <div className="timerDiv">
 
 }
 
-function Footer(props) {
+function FooterDiv(props) {
     function parse(){
         if (props.page == Page.delegates) {
             return "Delegates";
@@ -143,7 +149,7 @@ function Footer(props) {
         .filter(page => {if (page == props.page){return false;} return true;})
         .map(page =>  <a className="dropdown-item text-center text-uppercase" onClick={() => state.toPage(page)} key={page}>{page}</a>)
 
-    return  <div className="dropdown">
+    return  <div id="footerDiv" className="dropdown">
                 <a href="#" data-bs-toggle="dropdown"><h1 className="header-txt fw-bold text-uppercase">{parse()}</h1></a>
                 <div className="dropdown-menu">
                     {motionsDropdown}

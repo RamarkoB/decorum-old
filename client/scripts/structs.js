@@ -24,7 +24,6 @@ class Delegate {
         return this.timesSpoken
     }
 
-
     markPresent(){
         this.attendence = Attendence.Present;
     }
@@ -69,12 +68,24 @@ class Speaker {
         return this.hasDelegate;
     }
 
+    getDelegate(){
+        return this.delegate;
+    }
+
     getName(){
-        return this.delegate.getName();
+        if (this.hasDelegate) {
+            return this.delegate.getName();
+        } else {
+            return "None";
+        }
     }
 
     speak() {
         this.spoken = true;
+    }
+
+    hasSpoken(){
+        return this.spoken;
     }
 }
 
@@ -97,17 +108,21 @@ class SpeakersList {
         this.listSpeakers[i].removeDelegate(del);
     }
 
+    // getName(num) {
+    //     return this.listSpeakers[num].getName();
+    // }
+
     hasNext(){
         return (this.speakerNum < this.NumSpeakers);
     }
 
     nextSpeaker() {
         if (this.speakernum > 0) {
-            this.list[this.speakerNum].speak();
+            this.listSpeakers[this.speakerNum].speak();
         }
 
         this.speakerNum++;
-        return this.list[this.speakerNum - 1];
+        return this.listSpeakers[this.speakerNum - 1];
     }
 }
 
@@ -281,6 +296,16 @@ class State {
         return count;
     }
 
+    getPresent() {
+        let present = [];
+        this.dels.forEach(del => {
+            if (del.getAttendence() == Attendence.Present) {
+                present.push(del);
+            }
+        });
+        return present;
+    }
+
 
 
     //State Speaker Methods
@@ -289,20 +314,51 @@ class State {
         socket.emit("makeSpeakersList", num);
     }
 
-    addSpeaker(speaker, delegate) {
-        this.speakers.addDelegate(speaker, delegate);
-        socket.emit("AddSpeaker", speaker, delegate);
+    addSpeaker(i, delnum) {
+        this.speakers.addDelegate(i, this.dels[delnum]);
+        socket.emit("addSpeaker", i, delnum);
     }
 
     removeSpeaker(num) {
         this.speakers.removeDelegate(num);
-        socket.emit("RemoveSpeaker", num);
+        socket.emit("removeSpeaker", num);
     }
 
     nextSpeaker(){
-        this.currentSpeaker = speakersList.nextSpeaker();
+        this.currentSpeaker = this.getSpeakersList().nextSpeaker();
         socket.emit("nextSpeaker");
         return this.currentSpeaker.getName();
+    }
+
+    getSpeakersList(){
+        return this.speakers;
+    }
+
+    getSpeakers(){
+        if (this.speakers == null){
+            return [];
+        } else {
+            return this.speakers.listSpeakers;
+        }
+    }
+
+    getSpeaker(num){
+        if (this.getSpeakersList().listSpeakers[num].getDelegate() == null) {
+            return "None";
+        }
+        return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
+    }
+
+    updateSpeakers(cmd, args){
+        if (cmd == "makeSpeakersList") {
+            this.speakers = new SpeakersList(args);
+        } else if (cmd == "addSpeaker") {
+            this.speakers.addDelegate(args[0], this.dels[args[1]]);
+        } else if (cmd = "removeSpeaker"){
+            this.speakers.removeDelegate(args);
+        } else if (cmd = "nextSpeaker") {
+            this.currentSpeaker.nextSpeaker();
+        }
     }
 
 
@@ -373,6 +429,18 @@ class State {
 
     getOtherPages() {
         
+    }
+
+    //Motion Methods
+    genMod(minutes, speakingTime){
+        const seconds = minutes * 60;
+        if (seconds % speakingTime != 0) {
+            console.error("The number of minutes is not divisible by the number of speakers");
+        }
+    
+        const speakers = Math.round(seconds / speakingTime);
+        this.setTimer(0, speakingTime);
+        this.makeSpeakersList(speakers);
     }
 }
 
