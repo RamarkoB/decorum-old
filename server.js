@@ -442,7 +442,6 @@ class State {
 }
 
 
-
 let delNames = ["Carolyn", "Joseph", "Jingwen", "Bertrand", "Laura", "Christine", "Ramarko", "Ariel", "Marcos", "Helen", "Nina", "Zane", "Pascual", "Danny"];
 let state = new State(delNames);
 
@@ -537,4 +536,4 @@ io.on('connection', (socket) => {
 
 http.listen(3000, function(){
     console.log('listening on *:3000');
-  });
+});
