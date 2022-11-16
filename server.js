@@ -2,9 +2,6 @@ const app = require('express')();
 const express = require('express');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const babel = require("@babel/core").transform("code", {
-  presets: ["@babel/preset-env"],
-});
 
 app.use(express.static(__dirname + "/client"));
 app.get('/client', (req, res) => {});
