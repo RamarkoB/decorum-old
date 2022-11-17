@@ -1,4 +1,4 @@
-/* Applicable to all pages */
+/* Header CSS */
 header {
     z-index: 5;
     border-bottom: 3px solid black;
@@ -23,24 +23,12 @@ header {
 }
 
 
-
-
 body {
     background-color: #FEF9F3;
     z-index: 0;
     font-family: Jost;
 }
 
-footer {
-    text-align: center;
-    border-top: 3px solid black;
-    top: 0;
-}
-
-#footerDiv {
-    width: fit-content;
-    margin: auto;
-}
 
 a {
     text-decoration: none;
@@ -218,4 +206,16 @@ section:not(.active) {
 
 .timer-text {
     width:2.2ch;
+}
+
+/* Footer CSS */
+footer {
+    text-align: center;
+    border-top: 3px solid black;
+    top: 0;
+}
+
+#footerDiv {
+    width: fit-content;
+    margin: auto;
 }

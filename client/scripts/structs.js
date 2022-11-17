@@ -118,12 +118,9 @@ class SpeakersList {
     }
 
     nextSpeaker() {
-        if (this.speakernum > 0) {
-            this.listSpeakers[this.speakerNum].speak();
-        }
-
+        this.listSpeakers[this.speakerNum].speak();
         this.speakerNum++;
-        return this.listSpeakers[this.speakerNum - 1];
+        return this.listSpeakers[this.speakerNum];
     }
 }
 
@@ -336,7 +333,6 @@ class State {
     nextSpeaker(){
         this.currentSpeaker = this.getSpeakersList().nextSpeaker();
         socket.emit("nextSpeaker");
-        return this.currentSpeaker.getName();
     }
 
     getSpeakersList(){
@@ -363,10 +359,10 @@ class State {
             this.speakers = new SpeakersList(args);
         } else if (cmd == "addSpeaker") {
             this.speakers.addDelegate(args[0], this.dels[args[1]]);
-        } else if (cmd = "removeSpeaker"){
-            this.speakers.removeDelegate(args);
+        // } else if (cmd = "removeSpeaker"){
+        //     this.speakers.removeDelegate(args);
         } else if (cmd = "nextSpeaker") {
-            this.currentSpeaker.nextSpeaker();
+            this.currentSpeaker = this.getSpeakersList().nextSpeaker();
         }
     }
 

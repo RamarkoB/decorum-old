@@ -41,7 +41,7 @@ function SpeakerDiv(props) {
 
     return  <div className="dropdown">
                 <a href="#" data-bs-toggle="dropdown">
-                    <div className="card speaker">
+                    <div className={props.spoken == "yes"? "card speaker spoken" : "card speaker"}>
                         <p>{props.name}</p>
                     </div>
                 </a>

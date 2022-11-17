@@ -113,9 +113,9 @@ class SpeakersList {
         this.listSpeakers[i].addDelegate(del);
     }
 
-    removeDelegate(i, del) {
-        this.listSpeakers[i].removeDelegate(del);
-    }
+    // removeDelegate(i, del) {
+    //     this.listSpeakers[i].removeDelegate(del);
+    // }
 
     // getName(num) {
     //     return this.listSpeakers[num].getName();
@@ -353,10 +353,10 @@ class State {
             this.speakers = new SpeakersList(args);
         } else if (cmd == "addSpeaker") {
             this.speakers.addDelegate(args[0], this.dels[args[1]]);
-        } else if (cmd = "removeSpeaker"){
-            this.speakers.removeDelegate(args);
+        // } else if (cmd = "removeSpeaker"){
+        //     this.speakers.removeDelegate(args);
         } else if (cmd = "nextSpeaker") {
-            this.currentSpeaker.nextSpeaker();
+            this.speakers.nextSpeaker();
         }
     }
 
@@ -440,29 +440,29 @@ class State {
 
 
 let delNames = ['Alex Obtre Lumumba',
-'Amb. Ernest Niyokindi',
-'Amb. Francois Nkulikiyimfura',
-'Amb. Jean Tambu Mikuma',
-'Amb. Samwel Shelukundo',
-'Christophe Bazivamo',
-'Dr. Anthony L. Kafumbe',
-'Dr. James Otieno Jowi',
-'Dr. Kevit Desai',
-'Dr. Novat Twungubumwe',
-'Dr. Patrick Njoroge',
-'Emile Nguza Arao',
-'Eng. Steven D.M. Mlote',
-'H.E. Ms. Doreen Ruth Amule',
-'H.E. Prof. Judy Wakhungu',
-'Hon. Amb. Ezéchiel Nibigira',
-'Justice Nestor Kayobera',
-'Kenneth A. Bagamuhunda',
-'Lilian K. Mukoronia',
-'Muyambi Fortunate',
-'Prof. Gaspard Banyankimbona',
-'Rt. Hon Martin Ngoga',
-'Vivienne Yeda Apopo',
-'Yufnalis N. Okubo',];
+        'Amb. Ernest Niyokindi',
+        'Amb. Francois Nkulikiyimfura',
+        'Amb. Jean Tambu Mikuma',
+        'Amb. Samwel Shelukundo',
+        'Christophe Bazivamo',
+        'Dr. Anthony L. Kafumbe',
+        'Dr. James Otieno Jowi',
+        'Dr. Kevit Desai',
+        'Dr. Novat Twungubumwe',
+        'Dr. Patrick Njoroge',
+        'Emile Nguza Arao',
+        'Eng. Steven D.M. Mlote',
+        'H.E. Ms. Doreen Ruth Amule',
+        'H.E. Prof. Judy Wakhungu',
+        'Hon. Amb. Ezéchiel Nibigira',
+        'Justice Nestor Kayobera',
+        'Kenneth A. Bagamuhunda',
+        'Lilian K. Mukoronia',
+        'Muyambi Fortunate',
+        'Prof. Gaspard Banyankimbona',
+        'Rt. Hon Martin Ngoga',
+        'Vivienne Yeda Apopo',
+        'Yufnalis N. Okubo'];
 let state = new State(delNames);
 
 io.on('connection', (socket) => {
@@ -490,6 +490,10 @@ io.on('connection', (socket) => {
             socket.emit("addSpeaker", index, state.getDelegates().indexOf(speaker.getDelegate()));
         }
     });
+
+    for (let i = 0; i < state.getSpeakersList().speakerNum; i++) {
+        socket.emit("nextSpeaker");
+    }
   }
 
   socket.on("markPresent", (index) => {
@@ -549,11 +553,11 @@ io.on('connection', (socket) => {
   socket.on("nextSpeaker", () => {
     state.updateSpeakers("nextSpeaker");
     console.log("Speakers Update: Next Speaker"); //return to add more
-    socket.broadcast.emit("nextSpeaker", i, delnum);
+    socket.broadcast.emit("nextSpeaker");
   });
 });
 
-
-http.listen(process.env.PORT, function(){
-    console.log('listening on *:', process.env.PORT);
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, function(){
+    console.log('listening on *:', PORT);
 });
