@@ -10,4 +10,4 @@ function tick(){
   footer.render(<Footer />);
 }
 
-setInterval(tick, 100);
+setInterval(tick, 50);

@@ -235,6 +235,7 @@ class State {
         this.dels = delegates.map((del) => new Delegate(del));
         this.speakers = null;
         this.currentSpeaker = null;
+        this.motions = new Array();
         this.timer = new Timer();
         this.page = Page.delegates;
         this.toPage(this.page);
@@ -429,6 +430,14 @@ class State {
     }
 
     //Motion Methods
+    addMotion(motion) {
+        this.motions.push(motion);
+    }
+
+    getMotions(){
+        return this.motions;
+    }
+
     genMod(minutes, speakingTime){
         const seconds = minutes * 60;
         if (seconds % speakingTime != 0) {

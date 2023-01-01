@@ -9,14 +9,46 @@ function DelegateDiv(props) {
     }
   
     if (props.attendence == Attendence.Absent){
-      return <div className="card delegate absent" onClick={updateAttendence}><p>{props.name}</p></div>
+      return <div className="card mini delegate absent" onClick={updateAttendence}><p>{props.name}</p></div>
     } else {
-      return <div className="card delegate" onClick={updateAttendence}><p>{props.name}</p></div>
+      return <div className="card mini delegate" onClick={updateAttendence}><p>{props.name}</p></div>
     }
 }
 
-function MotionDiv(props) {
-    return <div className="card motion"><p>{props.motion}</p></div>
+function LilMotionDiv(props) {
+    function addMotion() {
+        switch (props.motion) {
+            case Motions.Extend:
+                state.addMotion(new Extend());
+                break;
+            case Motions.Voting:
+                state.addMotion(new Voting(0, 0));
+                break;
+            case Motions.Introduce:
+                state.addMotion(new Introduce());
+                break;
+            case Motions.Unmod:
+                state.addMotion(new Unmod(0, 0));
+                break;
+            case Motions.RoundRobin:
+                state.addMotion(new RoundRobin());
+                break;
+            case Motions.StrawPoll:
+                state.addMotion(new StrawPoll());
+                break;
+            case Motions.Mod:
+                state.addMotion(new Mod(0, 0));
+                break;
+        }
+    }
+
+    return  <div className="card mini motion" onClick={addMotion}><p>{props.motion}</p></div>
+}
+
+function BigMotionDiv(props) {
+    return  <div className="card bigMotion">
+                <h3>{props.motion}</h3>
+            </div>
 }
 
 function SpeakerDiv(props) {
@@ -32,7 +64,7 @@ function SpeakerDiv(props) {
 
     return  <div className="dropdown">
                 <a href="#" data-bs-toggle="dropdown">
-                    <div className={props.spoken == "yes"? "card speaker spoken" : "card speaker"}>
+                    <div className={props.spoken == "yes"? "card mini speaker spoken" : "card mini speaker"}>
                         <p>{props.name}</p>
                     </div>
                 </a>
@@ -131,8 +163,8 @@ function DelegatePage() {
     );
     const numPresent = state.numPresent();
 
-    return [<div className="side col-8 scroll">{delegates}</div>, 
-            <div className="side col-4">
+    return [<div id="delList" className="side col-8 scroll" key="delList">{delegates}</div>, 
+            <div id="delMain" className="side col-4" key="delMain">
                 <p>There are {numPresent} Delegates</p>
                 <p>A Simple Majority requires {Math.round(numPresent * 1/2)} Delegates</p>
                 <p>A 2/3 Majority requires {Math.round(numPresent * 2/3)} Delegates</p>
@@ -148,26 +180,29 @@ function ModPage() {
         <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
     );
 
-    return [<div id="speakersList" className="side col-4 scroll">
+    return [<div id="speakersList" className="side col-4 scroll" key="speakersList">
                 {speakers}
             </div>,
-            <div id="modMain" className="side col-8">
+            <div id="modMain" className="side col-8" key="modMain">
                 <TimerDiv />
             </div>]
 }
 
 function DirectivesPage() {
-    return [<div id="directivesList" className="side col-4 scroll"></div>,
-            <div id="directivesList" className="side col-8"></div>];
+    return [<div id="directivesList" className="side col-4 scroll" key="directivesList"></div>,
+            <div id="directivesMain" className="side col-8" key="directivesMain"></div>];
 }
 
 function MotionsPage() {
-    const motions = Object.values(Motions).map((motion) =>
-        <MotionDiv motion={motion} key={motion}/>
+    const motionTypes = Object.values(Motions).map((motion) =>
+        <LilMotionDiv motion={motion} key={motion}/>
     );
+    const motions = state.getMotions().map((motion) =>
+        <BigMotionDiv motion={motion.type} key={motion.rank}/>
+    )
 
-    return [<div id="motionsList" className="side col-4 scroll">{motions}</div>,
-            <div id="motionsMain" className="side col-8"></div>]
+    return [<div id="motionSelect" className="side col-4 scroll" key="motionSelect">{motionTypes}</div>,
+            <div id="motionsMain" className="side col-8" key="motionsMain">{motions}</div>]
 }
 
 

@@ -63,7 +63,7 @@ a {
 }
 
 section {
-    min-height: 82%;
+    min-height: 81%;
     padding: 0px 12px;
 }
 
@@ -71,18 +71,27 @@ section:not(.active) {
     display: none;
 }
 
-.speaker p, .delegate p, .motion p {
+.card.mini p {
     color:black;
     margin:auto;
     margin: 10px;
     font-size: 100%;
 }
 
-.speaker, .delegate, .motion {
+.card.mini {
     background: inherit;
     cursor: pointer;
     border: 2px solid black;
     margin: 0px 0px 10px 0px;
+}
+
+.card.bigMotion {
+    margin: 15px 5px;
+    border-radius: 1rem;
+    border: black 2px solid;
+    text-align: center;
+    background-color: inherit;
+    
 }
 
 .speaker.spoken, .delegate.absent {
