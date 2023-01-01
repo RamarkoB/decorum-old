@@ -44,7 +44,8 @@ a {
     background-color: black;
 }
 
-#speakersList, #delegatesList, #motionsList {
+.scroll {
+    text-align: center!important;
     height: 100%;
     padding: 10px;
     overflow-y: scroll;
@@ -53,7 +54,7 @@ a {
     scrollbar-width: none;  /* Firefox */
 }
 
-#speakersList::-webkit-scrollbar,#delegatesList::-webkit-scrollbar, #motionsList::-webkit-scrollbar  {
+.scroll::-webkit-scrollbar  {
     display: none;
 }
 
@@ -62,7 +63,7 @@ a {
 }
 
 section {
-    min-height: 81%;
+    min-height: 82%;
     padding: 0px 12px;
 }
 

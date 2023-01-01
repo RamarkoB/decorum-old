@@ -46,7 +46,7 @@ class Delegate {
 }
 
 
-//Speakers List Classes
+//Speaker Classes
 class Speaker {
     constructor() {
         this.delegate = null;
@@ -227,15 +227,6 @@ const Page = {
     directives: "directives",
     mod: "mod",
     unmod: "unmod",
-}
-
-//Motions
-const Motion = {
-    Introduce: "Introduce Directives",
-    Moderated: "Moderated Caucus",
-    Unmoderated: "Unmoderated Caucus",
-    StrawPoll: "Straw Poll",
-    RoundRobin: "Round Robin"
 }
 
 //State
@@ -426,10 +417,11 @@ class State {
 
     //Page Methods
     toPage(page) {
-        const oldPage = this.page;
         this.page = page;
-        document.getElementById(oldPage).classList.remove("active");
-        document.getElementById(this.page).classList.add("active");
+    }
+
+    getPage(){
+        retir
     }
 
     getOtherPages() {
