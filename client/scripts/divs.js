@@ -15,7 +15,7 @@ function DelegateDiv(props) {
     }
 }
 
-function MotionDiv() {
+function MotionDiv(props) {
     return <div className="card motion"><p>{props.motion}</p></div>
 }
 
@@ -162,11 +162,11 @@ function DirectivesPage() {
 }
 
 function MotionsPage() {
-    const motions = state.getSpeakers().map((speaker, index) =>
-        <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
+    const motions = Object.values(Motions).map((motion) =>
+        <MotionDiv motion={motion} key={motion}/>
     );
 
-    return [<div id="motionsList" className="side col-4 scroll"></div>,
+    return [<div id="motionsList" className="side col-4 scroll">{motions}</div>,
             <div id="motionsMain" className="side col-8"></div>]
 }
 
@@ -174,32 +174,22 @@ function MotionsPage() {
 //Main Components
 function App(){
     switch (state.page) {
-        case Page.delegates:
-            return <DelegatePage />
-        case Page.unmod:
-            return <UnmodPage />
-        case Page.mod:
-            return <ModPage />
-        case Page.directives:
-            return <DirectivesPage />
-        case Page.motions:
-            return <MotionsPage />
+        case Page.delegates: return <DelegatePage />
+        case Page.unmod: return <UnmodPage />
+        case Page.mod: return <ModPage />
+        case Page.directives: return <DirectivesPage />
+        case Page.motions: return <MotionsPage />
     }
 }
 
 function Footer() {
     function parse(){
         switch (state.page) {
-            case Page.delegates:
-                return "Delegates"
-            case Page.unmod:
-                return "Unmoderated Caucus"
-            case Page.mod:
-                return "Moderated Caucus"
-            case Page.directives:
-                return "Directives"
-            case Page.motions:
-                return "Motions"
+            case Page.delegates: return "Delegates"
+            case Page.unmod: return "Unmoderated Caucus"
+            case Page.mod: return "Moderated Caucus"
+            case Page.directives: return "Directives"
+            case Page.motions: return "Motions"
         }
     }
     
