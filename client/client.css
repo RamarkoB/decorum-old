@@ -67,10 +67,6 @@ section {
     padding: 0px 12px;
 }
 
-section:not(.active) {
-    display: none;
-}
-
 .card.mini p {
     color:black;
     margin:auto;
@@ -203,11 +199,6 @@ section:not(.active) {
 
 .btn-close:focus {
     box-shadow: none;
-}
-
-#countdown-mini {
-    width:fit-content;
-    margin:auto;
 }
 
 .timer-mini {

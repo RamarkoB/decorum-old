@@ -422,7 +422,7 @@ class State {
     }
 
     getPage(){
-        retir
+        return this.page;
     }
 
     getOtherPages() {

@@ -95,8 +95,8 @@ function TimerDiv() {
 
     function buttonCheck(){
         if (state.getTimerStatus() == Status.Inactive) {
-        const minutesString = document.getElementById(props.section + "-timer-min").value;
-        const secondsString = document.getElementById(props.section + "-timer-sec").value;
+        const minutesString = document.getElementById("timer-min").value;
+        const secondsString = document.getElementById("timer-sec").value;
 
         const minutes = (minutesString == "") ? 0 : parseInt(minutesString);
         const seconds = (secondsString == "") ? 0 : parseInt(secondsString);
