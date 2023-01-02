@@ -1,0 +1,227 @@
+/* Header CSS */
+header {
+    z-index: 5;
+    border-bottom: 3px solid black;
+    top: 0;
+    position: sticky;
+    background-color: #FEF9F3;
+}
+
+.header {
+    width: fit-content;
+}
+
+.header-txt {
+    text-align: center;
+    padding-top: 27px;
+    padding-bottom: 17px;
+    letter-spacing: 10px; 
+    font-weight: bold;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+body {
+    background-color: #FEF9F3;
+    z-index: 0;
+    font-family: Jost;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+.dropdown-menu {
+    border: 2px black solid;
+    background: #FEF9F3;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    background-color: black;
+}
+
+.scroll {
+    text-align: center!important;
+    height: 100%;
+    padding: 10px;
+    overflow-y: scroll;
+    border-right: 3px solid black;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.scroll::-webkit-scrollbar  {
+    display: none;
+}
+
+.dropdown-item {
+    cursor: pointer;
+}
+
+section {
+    min-height: 81%;
+    padding: 0px 12px;
+}
+
+.card.mini p {
+    color:black;
+    margin:auto;
+    margin: 10px;
+    font-size: 100%;
+}
+
+.card.mini {
+    background: inherit;
+    cursor: pointer;
+    border: 2px solid black;
+    margin: 0px 0px 10px 0px;
+}
+
+.card.bigMotion {
+    margin: 15px 5px;
+    border-radius: 1rem;
+    border: black 2px solid;
+    text-align: center;
+    background-color: inherit;
+    
+}
+
+.speaker.spoken, .delegate.absent {
+    background-color: pink;
+}
+
+.timerDiv {
+    margin: 15px 5px;
+    border-radius: 1rem;
+    border: black 2px solid;
+    text-align: center;
+}
+
+.timer {
+    text-transform: uppercase;
+    font-weight: 500;
+    width: fit-content;
+    margin: auto;
+    cursor: text;
+}
+
+.timer span {
+    font-size: 3rem;
+    margin-left: 0.8rem;
+}
+
+.timer span:first-of-type {
+    margin-left: 0;
+}
+
+.countdown-circles {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.countdown-circles span {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.countdown-circles span:first-of-type {
+    margin-left: 0;
+}
+
+.rounded {
+    border-radius: 1rem !important;
+}
+
+.btn-demo {
+    padding: 0.5rem 2rem !important;
+    border-radius: 30rem !important;
+    background: black;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold !important;
+}
+
+.btn-demo:hover{
+    color: #fff;
+    background: rgb(100, 100, 100);
+}
+
+.btn:focus{
+    box-shadow: none;
+}
+
+.btn-active {
+    color:black
+}
+
+.timer input {
+    border: none;
+    background-color: transparent;
+    display: inline;
+    text-align: right;
+    font-size: 3rem;;
+    font-weight: 500;
+    padding: none;
+    outline: none;
+    width:2.2ch;
+}
+
+.timer-inactive {
+    margin: 0;
+    color:gray;
+}
+
+.timer-active {
+    margin: 0;
+}
+
+.countdown-done {
+    background-color: pink;
+}
+
+.btn-timer-close {
+    position: relative;
+    float: right;
+    top: .5rem;
+    right: .5rem;
+    box-shadow: none;
+}
+
+.btn-close:focus {
+    box-shadow: none;
+}
+
+#countdown-mini {
+    width:fit-content;
+    margin:auto;
+}
+
+.timer-mini {
+    margin:auto;
+}
+
+.timer-text {
+    width:2.2ch;
+}
+
+/* Footer CSS */
+footer {
+    text-align: center;
+    border-top: 3px solid black;
+    top: 0;
+}
+
+#footerDiv {
+    width: fit-content;
+    margin: auto;
+}
