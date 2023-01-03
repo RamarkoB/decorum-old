@@ -557,8 +557,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 8000
-;
+const PORT = process.env.PORT || 3000;
 http.listen(PORT, function(){
     console.log('listening on *:', PORT);
 });
