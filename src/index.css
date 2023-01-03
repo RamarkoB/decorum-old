@@ -67,18 +67,29 @@ section {
     padding: 0px 12px;
 }
 
+.delegateCount {
+    height: 25%;
+}
+
+.delegateCount .card {
+    margin: auto;
+}
+
+
+.card {
+    background: inherit;
+    border: 2px solid black;
+}
+
 .card.mini p {
     color:black;
-    margin:auto;
     margin: 10px;
     font-size: 100%;
 }
 
 .card.mini {
-    background: inherit;
-    cursor: pointer;
-    border: 2px solid black;
     margin: 0px 0px 10px 0px;
+    cursor: pointer;
 }
 
 .card.bigMotion {
