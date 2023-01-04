@@ -85,6 +85,10 @@ class Speaker {
         this.spoken = true;
     }
 
+    unspeak() {
+        this.spoken = false;
+    }
+
     hasSpoken(){
         return this.spoken;
     }
@@ -109,18 +113,28 @@ class SpeakersList {
         this.listSpeakers[i].removeDelegate(del);
     }
 
-    // getName(num) {
-    //     return this.listSpeakers[num].getName();
-    // }
+    getName(num) {
+        return this.listSpeakers[num].getName();
+    }
 
     hasNext(){
         return (this.speakerNum < this.NumSpeakers);
     }
 
     nextSpeaker() {
-        this.listSpeakers[this.speakerNum].speak();
-        this.speakerNum++;
-        return this.listSpeakers[this.speakerNum];
+        if (this.speakerNum < this.numSpeakers) {
+            this.listSpeakers[this.speakerNum].speak();
+            this.speakerNum++;
+            return this.listSpeakers[this.speakerNum];
+        }
+    }
+
+    lastSpeaker() {
+        if (this.speakerNum > 0) {
+            this.speakerNum--;
+            this.listSpeakers[this.speakerNum].unspeak();
+            return this.listSpeakers[this.speakerNum];
+        }
     }
 }
 
@@ -147,7 +161,7 @@ class Timer {
             return setInterval(update, 100);
         }
 
-        if (deadline == undefined){
+        if (deadline === undefined){
             this.deadline = new Date(Date.parse(new Date()) + this.offset);        
         } else {
             this.deadline = deadline;
@@ -165,7 +179,7 @@ class Timer {
         this.interval = null;
         this.status = Status.Paused;
 
-        if (offset != undefined){
+        if (offset !== undefined){
             this.offset = offset;
         }
 

@@ -1,6 +1,5 @@
 /* Header CSS */
 header {
-    z-index: 5;
     border-bottom: 3px solid black;
     top: 0;
     position: sticky;
@@ -22,13 +21,11 @@ header {
     cursor: pointer;
 }
 
-
 body {
     background-color: #FEF9F3;
-    z-index: 0;
     font-family: Jost;
+    overflow: hidden;
 }
-
 
 a {
     text-decoration: none;
@@ -44,8 +41,13 @@ a {
     background-color: black;
 }
 
-.scroll {
-    text-align: center!important;
+.pass-module {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.side {
+    text-align: center;
     height: 100%;
     padding: 10px;
     overflow-y: scroll;
@@ -54,7 +56,7 @@ a {
     scrollbar-width: none;  /* Firefox */
 }
 
-.scroll::-webkit-scrollbar  {
+.side::-webkit-scrollbar  {
     display: none;
 }
 
@@ -75,10 +77,13 @@ section {
     margin: auto;
 }
 
-
 .card {
     background: inherit;
     border: 2px solid black;
+}
+
+.notready {
+    opacity: 50%;
 }
 
 .card.mini p {
@@ -92,17 +97,25 @@ section {
     cursor: pointer;
 }
 
-.card.bigMotion {
-    margin: 15px 5px;
+.bigMotion h3 {
+    margin-bottom: 0;
+}
+
+.bigMotion {
+    margin: 0px 5px 15px;
     border-radius: 1rem;
     border: black 2px solid;
     text-align: center;
     background-color: inherit;
-    
+    padding: 10px;
 }
 
-.speaker.spoken, .delegate.absent {
+.pink {
     background-color: pink;
+}
+
+.green {
+    background-color: PaleGreen;
 }
 
 .timerDiv {
@@ -180,11 +193,28 @@ section {
     background-color: transparent;
     display: inline;
     text-align: right;
-    font-size: 3rem;;
-    font-weight: 500;
     padding: none;
     outline: none;
     width:2.2ch;
+    font-size: 3rem;
+    font-weight: 500;
+}
+
+.motion-input {
+    margin-bottom: 0;
+    text-transform: uppercase;
+}
+
+.motion-input input {
+    border: none;
+    background-color: transparent;
+    display: inline;
+    text-align: right;
+    padding: 0;
+    outline: none;
+    width:2.5ch;
+    font-size: x-large;
+    margin-left: 0.4ch;
 }
 
 .timer-inactive {

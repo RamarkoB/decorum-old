@@ -1,15 +1,25 @@
-import {Attendence, Delegate, Speaker, SpeakersList, Status, Timer, Page} from "./structs";
+import {Attendence, Delegate, SpeakersList, Status, Timer, Page} from "./structs";
 
 //State
 class State {
     constructor(delegates){
+        //Delegates and Signatory Number
         this.dels = delegates.map((del) => new Delegate(del));
-        this.speakers = null;
+        this.signum = 0;
+
+        //Speakers
         this.currentSpeaker = null;
-        this.motions = new Array();
+        this.speakers = null;
+        
+        //Motions
+        this.currentMotion = null;
+        this.motions = [];
+
+        //Timer
         this.timer = new Timer();
+
+        //Pages
         this.page = Page.delegates;
-        this.toPage(this.page);
     }
 
     //State Delegate Methods
@@ -47,7 +57,7 @@ class State {
     numPresent() {
         let count = 0;
         this.dels.forEach(del => {
-            if (del.getAttendence() == Attendence.Present) {
+            if (del.getAttendence() === Attendence.Present) {
                 count += 1;
             }
         });
@@ -57,7 +67,7 @@ class State {
     getPresent() {
         let present = [];
         this.dels.forEach((del) => {
-            if (del.getAttendence() == Attendence.Present) {
+            if (del.getAttendence() === Attendence.Present) {
                 present.push(del);
             }
         });
@@ -67,9 +77,9 @@ class State {
     updateAttendence(num, attendence){
         const del = this.dels[num];
         
-        if (attendence == Attendence.Present){
+        if (attendence === Attendence.Present){
             del.markPresent();
-        } else if (attendence = Attendence.Voting) {
+        } else if (attendence === Attendence.Voting) {
             del.markVoting();
         } else {
             del.markAbsent();
@@ -94,7 +104,13 @@ class State {
     }
 
     nextSpeaker(){
-        this.currentSpeaker = this.getSpeakersList().nextSpeaker();
+        this.currentSpeaker = this.speakers.nextSpeaker();
+        this.resetTimer();
+        // socket.emit("nextSpeaker");
+    }
+
+    lastSpeaker(){
+        this.currentSpeaker = this.speakers.lastSpeaker();
         // socket.emit("nextSpeaker");
     }
 
@@ -103,7 +119,7 @@ class State {
     }
 
     getSpeakers(){
-        if (this.speakers == null){
+        if (this.speakers === null){
             return [];
         } else {
             return this.speakers.listSpeakers;
@@ -111,20 +127,20 @@ class State {
     }
 
     getSpeaker(num){
-        if (this.getSpeakersList().listSpeakers[num].getDelegate() == null) {
+        if (this.getSpeakersList().listSpeakers[num].getDelegate() === null) {
             return "None";
         }
         return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
     }
 
     updateSpeakers(cmd, args){
-        if (cmd == "makeSpeakersList") {
+        if (cmd === "makeSpeakersList") {
             this.speakers = new SpeakersList(args);
-        } else if (cmd == "addSpeaker") {
+        } else if (cmd === "addSpeaker") {
             this.speakers.addDelegate(args[0], this.dels[args[1]]);
         // } else if (cmd = "removeSpeaker"){
         //     this.speakers.removeDelegate(args);
-        } else if (cmd = "nextSpeaker") {
+        } else if (cmd === "nextSpeaker") {
             this.currentSpeaker = this.getSpeakersList().nextSpeaker();
         }
     }
@@ -137,12 +153,14 @@ class State {
     }
 
     playTimer() {
-        const deadline = this.timer.play();
+        this.timer.play()
+        // const deadline = this.timer.play();
         // socket.emit("play", deadline);
     }
     
     pauseTimer() {
-        const offset = this.timer.pause();
+        this.timer.pause()
+        // const offset = this.timer.pause();
         // socket.emit("pause", offset);
     }
 
@@ -160,7 +178,7 @@ class State {
     }
 
     getTimerStatus(){
-        if (this.timer == null) {
+        if (this.timer === null) {
             return Status.Inactive;
         } else {
             return this.timer.status;
@@ -176,11 +194,11 @@ class State {
     }
 
     updateTimer(cmd, args) {
-        if (cmd == "set") {
+        if (cmd === "set") {
             this.timer.set(args[0], args[1]);
-        } else if (cmd == "play") {
+        } else if (cmd === "play") {
             this.timer.play(args);
-        } else if (cmd == "pause") {
+        } else if (cmd === "pause") {
             this.timer.pause(args);
         } else {
             this.timer.reset();
@@ -197,7 +215,7 @@ class State {
     }
 
     getOtherPages() {
-        return Object.values(Page).filter(page => {if (page == this.page){return false;} return true;})
+        return Object.values(Page).filter(page => {if (page === this.page){return false;} return true;})
     }
 
     //Motion Methods
@@ -211,7 +229,7 @@ class State {
 
     genMod(minutes, speakingTime){
         const seconds = minutes * 60;
-        if (seconds % speakingTime != 0) {
+        if (seconds % speakingTime !== 0) {
             console.error("The number of minutes is not divisible by the number of speakers");
         }
     
@@ -247,5 +265,6 @@ let delNames = ['Alex Obtre Lumumba',
         'Vivienne Yeda Apopo',
         'Yufnalis N. Okubo'];
 let state = new State(delNames);
+state.genMod(8, 30)
 
 export default state;

@@ -1,20 +1,20 @@
-import { Attendence, Status } from './structs';
-import state from './state';
-import {Motions, Extend, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod} from './motions';
-
+import state from '../state/state';
+import MotionDiv from './motiondivs';
+import { Attendence, Status } from './../state/structs';
+import {Motions, Extend, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod} from '../state/motions';
 
 //Small Components
 function DelegateDiv(props) {
   function updateAttendence(){
-    if (state.getAttendence(props.index) == Attendence.Absent){
+    if (state.getAttendence(props.index) === Attendence.Absent){
       state.markPresent(props.index);
     } else {
       state.markAbsent(props.index);
     }
   }
 
-  if (props.attendence == Attendence.Absent){
-    return <div className="card mini delegate absent" onClick={updateAttendence}><p>{props.name}</p></div>
+  if (props.attendence === Attendence.Absent){
+    return <div className="card mini delegate pink" onClick={updateAttendence}><p>{props.name}</p></div>
   } else {
     return <div className="card mini delegate" onClick={updateAttendence}><p>{props.name}</p></div>
   }
@@ -44,16 +44,12 @@ function LilMotionDiv(props) {
           case Motions.Mod:
               state.addMotion(new Mod(0, 0));
               break;
+
+            // no default
       }
   }
 
   return  <div className="card mini motion" onClick={addMotion}><p>{props.motion}</p></div>
-}
-
-function BigMotionDiv(props) {
-  return  <div className="card bigMotion">
-              <h3>{props.motion}</h3>
-          </div>
 }
 
 function SpeakerDiv(props) {
@@ -63,13 +59,16 @@ function SpeakerDiv(props) {
   }
 
   const present = state.getPresent();
-  const presentDels = present.map(del => <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
-      {del.getName()}
-      </a>)
+  const presentDels = present.length > 0 ?
+    present.map(del => <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
+        {del.getName()}
+        </a>):
+        <a className="dropdown-item text-center text-uppercase"> No Delegates Present </a>
+    
 
   return  <div className="dropdown">
               <a href="#" data-bs-toggle="dropdown">
-                  <div className={props.spoken == "yes"? "card mini speaker spoken" : "card mini speaker"}>
+                  <div className={props.spoken === "yes"? "card mini speaker pink" : "card mini speaker"}>
                       <p>{props.name}</p>
                   </div>
               </a>
@@ -85,9 +84,9 @@ function TimerDiv() {
   }
 
   function statusCheck(){
-      if (state.getTimerStatus() == Status.Inactive){
+      if (state.getTimerStatus() === Status.Inactive){
       return "Start";
-      } else if (state.getTimerStatus() == Status.Active){
+      } else if (state.getTimerStatus() === Status.Active){
       return "Pause";
       } else {
       return "Play";
@@ -99,16 +98,16 @@ function TimerDiv() {
   }
 
   function buttonCheck(){
-      if (state.getTimerStatus() == Status.Inactive) {
+      if (state.getTimerStatus() === Status.Inactive) {
       const minutesString = document.getElementById("timer-min").value;
       const secondsString = document.getElementById("timer-sec").value;
 
-      const minutes = (minutesString == "") ? 0 : parseInt(minutesString);
-      const seconds = (secondsString == "") ? 0 : parseInt(secondsString);
+      const minutes = (minutesString === "") ? 0 : parseInt(minutesString);
+      const seconds = (secondsString === "") ? 0 : parseInt(secondsString);
 
       state.setTimer(minutes, seconds);
       state.playTimer();
-      } else if (state.getTimerStatus() == Status.Active) {
+      } else if (state.getTimerStatus() === Status.Active) {
       state.pauseTimer();
       } else {
       state.playTimer();
@@ -127,7 +126,7 @@ function TimerDiv() {
 
 
   let timerNums;
-  if (state.getTimerStatus() == Status.Inactive){
+  if (state.getTimerStatus() === Status.Inactive){
       timerNums = <p className="timer-inactive">
       <input id={"timer-min"} placeholder={placeholderMin} maxLength="2" pattern="\d*"></input> Min 
       <input id={"timer-sec"} placeholder={placeholderSec} maxLength="2" pattern="\d*"></input> Sec
@@ -163,42 +162,47 @@ function TimerDiv() {
 
 //Page Components
 function DelegatePage() {
-  const delegates = state.getDelegates().map((del, index) =>
-      <DelegateDiv attendence={del.attendence} name={del.name} index={index} key={index}/>
-  );
-  const numPresent = state.numPresent();
+    const delegates = state.getDelegates().map((del, index) =>
+        <DelegateDiv attendence={del.attendence} name={del.name} index={index} key={index}/>
+    );
+    const numPresent = state.numPresent();
 
-  return [<div id="delList" className="side col-8 scroll" key="delList">{delegates}</div>, 
-          <div id="delMain" className="side col-4 scroll" key="delMain">
-            <div className='delegateCount'>
-                <div className='card'>
-                    <p>There are</p>
-                    <h1>{numPresent}</h1>
-                    <p>Delegates</p>
+    var sigCount =  <div id='sigcount' className='notready card inactive'>
+                        <p>A Directive requires</p>
+                        <h1>{state.signum}</h1>
+                        <p>Signatories</p>
+                    </div>
+
+
+    return [<div id="delList" className="side col-8" key="delList">{delegates}</div>, 
+            <div id="delMain" className="side col-4" key="delMain">
+                <div className='delegateCount'>
+                    <div className='card'>
+                        <p>There are</p>
+                        <h1>{numPresent}</h1>
+                        <p>Delegates</p>
+                    </div>
                 </div>
-            </div>
-            <div className='delegateCount'>
-                <div className='card'>
-                    <p>A 2/3 Majority requires</p>
-                    <h1>{Math.round(numPresent * 2/3)}</h1>
-                    <p>Delegates</p>
+                <div className='delegateCount'>
+                    <div className='card'>
+                        <p>A 2/3 Majority requires</p>
+                        <h1>{Math.round(numPresent * 2/3)}</h1>
+                        <p>Delegates</p>
+                    </div>
                 </div>
-            </div>
-            <div className='delegateCount'>
-                <div className='card'>
-                    <p>A Simple Majority requires</p>
-                    <h1>{Math.round(numPresent * 1/2)}</h1>
-                    <p>Delegates</p>
+                <div className='delegateCount'>
+                    <div className='card'>
+                        <p>A Simple Majority requires</p>
+                        <h1>{numPresent % 2 === 0 ?
+                        Math.round(numPresent * 1/2) + 1:
+                        Math.round(numPresent * 1/2)}</h1>
+                        <p>Delegates</p>
+                    </div>
                 </div>
-            </div>
-            <div className='delegateCount'>
-                <div className='card'>
-                    <p>A Directive requires</p>
-                    <h1>{Math.round(numPresent * 1/2)}</h1>
-                    <p>Signatories</p>
-                </div>
-            </div> 
-          </div>]
+                <div className='delegateCount'>
+                    {sigCount}
+                </div> 
+            </div>]
 }
 
 function UnmodPage() {
@@ -210,16 +214,32 @@ function ModPage() {
       <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
   );
 
-  return [<div id="speakersList" className="side col-4 scroll" key="speakersList">
-              {speakers}
-          </div>,
-          <div id="modMain" className="side col-8" key="modMain">
-              <TimerDiv />
-          </div>]
+  function lastSpeaker() {
+    state.lastSpeaker();
+  }
+
+  function nextSpeaker() {
+    state.nextSpeaker();
+  }
+
+  return    [<div id="speakersList" className="side col-4" key="speakersList">
+                {speakers}
+            </div>,
+            <div id="modMain" className="side col-8" key="modMain">
+                <TimerDiv />
+                <ul className="list-inline">
+                    <li className="list-inline-item">
+                        <button type="button" className="btn btn-demo" onClick={lastSpeaker}>Last Speaker</button>
+                    </li>
+                    <li className="list-inline-item">
+                        <button type="button" className="btn btn-demo" onClick={nextSpeaker}>Next Speaker</button>
+                    </li>
+                </ul>
+            </div>]
 }
 
 function DirectivesPage() {
-  return [<div id="directivesList" className="side col-4 scroll" key="directivesList"></div>,
+  return [<div id="directivesList" className="side col-4" key="directivesList"></div>,
           <div id="directivesMain" className="side col-8" key="directivesMain"></div>];
 }
 
@@ -228,11 +248,11 @@ function MotionsPage() {
       <LilMotionDiv motion={motion} key={motion}/>
   );
   const motions = state.getMotions().map((motion) =>
-      <BigMotionDiv motion={motion.type} key={motion.rank}/>
+      <MotionDiv motion={motion} key={motion.rank}/>
   )
 
-  return [<div id="motionSelect" className="side col-4 scroll" key="motionSelect">{motionTypes}</div>,
+  return [<div id="motionSelect" className="side col-4" key="motionSelect">{motionTypes}</div>,
           <div id="motionsMain" className="side col-8" key="motionsMain">{motions}</div>]
 }
 
-export {state, DelegatePage, UnmodPage, ModPage, DirectivesPage, MotionsPage};
+export {DelegatePage, UnmodPage, ModPage, DirectivesPage, MotionsPage};
