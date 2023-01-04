@@ -1,5 +1,5 @@
 import state from '../state/state';
-import MotionDiv from './motiondivs';
+import {MotionDiv, DirectiveDiv} from './motiondivs';
 import { Attendence, Status } from './../state/structs';
 import {Motions, Extend, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod} from '../state/motions';
 
@@ -176,37 +176,32 @@ function DelegatePage() {
 
     return [<div id="delList" className="side col-8" key="delList">{delegates}</div>, 
             <div id="delMain" className="side col-4" key="delMain">
-                <div className='delegateCount'>
-                    <div className='card'>
-                        <p>There are</p>
-                        <h1>{numPresent}</h1>
-                        <p>Delegates</p>
-                    </div>
+                <div className='card'>
+                    <p>There are</p>
+                    <h1>{numPresent}</h1>
+                    <p>Delegates</p>
                 </div>
-                <div className='delegateCount'>
-                    <div className='card'>
-                        <p>A 2/3 Majority requires</p>
-                        <h1>{Math.round(numPresent * 2/3)}</h1>
-                        <p>Delegates</p>
-                    </div>
+                <div className='card'>
+                    <p>A 2/3 Majority requires</p>
+                    <h1>{Math.round(numPresent * 2/3)}</h1>
+                    <p>Delegates</p>
                 </div>
-                <div className='delegateCount'>
-                    <div className='card'>
-                        <p>A Simple Majority requires</p>
-                        <h1>{numPresent % 2 === 0 ?
-                        Math.round(numPresent * 1/2) + 1:
-                        Math.round(numPresent * 1/2)}</h1>
-                        <p>Delegates</p>
-                    </div>
+                <div className='card'>
+                    <p>A Simple Majority requires</p>
+                    <h1>{numPresent % 2 === 0 ?
+                    Math.round(numPresent * 1/2) + 1:
+                    Math.round(numPresent * 1/2)}</h1>
+                    <p>Delegates</p>
                 </div>
-                <div className='delegateCount'>
-                    {sigCount}
-                </div> 
+                {sigCount}
             </div>]
 }
 
 function UnmodPage() {
-  return <TimerDiv />
+  return <div id="unmodMain">
+            <TimerDiv />
+        </div>
+  
 }
 
 function ModPage() {
@@ -222,33 +217,46 @@ function ModPage() {
     state.nextSpeaker();
   }
 
+  const speakerChange = <ul className="list-inline">
+                            <li className="list-inline-item">
+                                <button type="button" className="btn btn-demo" onClick={lastSpeaker}>Last Speaker</button>
+                            </li>
+                            <li className="list-inline-item">
+                                <button type="button" className="btn btn-demo" onClick={nextSpeaker}>Next Speaker</button>
+                            </li>
+                        </ul>
+
+  const speakerNum = <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>;
+
   return    [<div id="speakersList" className="side col-4" key="speakersList">
                 {speakers}
             </div>,
             <div id="modMain" className="side col-8" key="modMain">
                 <TimerDiv />
-                <ul className="list-inline">
-                    <li className="list-inline-item">
-                        <button type="button" className="btn btn-demo" onClick={lastSpeaker}>Last Speaker</button>
-                    </li>
-                    <li className="list-inline-item">
-                        <button type="button" className="btn btn-demo" onClick={nextSpeaker}>Next Speaker</button>
-                    </li>
-                </ul>
+                {speakerChange}
+                {speakerNum}
             </div>]
 }
 
 function DirectivesPage() {
-  return [<div id="directivesList" className="side col-4" key="directivesList"></div>,
-          <div id="directivesMain" className="side col-8" key="directivesMain"></div>];
+    const directives = state.directives.map((directive, index) =>
+        <DirectiveDiv status={directive.status} index={index} key={index}/>
+    )
+
+    return  [<div id="directivesList" className="side col-4" key="directivesList">
+                <button className="btn btn-demo" onClick={() => state.addDirective()}>Add Directive</button>
+            </div>,
+            <div id="directivesMain" className="side col-8" key="directivesMain">
+                {directives}
+            </div>];
 }
 
 function MotionsPage() {
   const motionTypes = Object.values(Motions).map((motion) =>
       <LilMotionDiv motion={motion} key={motion}/>
   );
-  const motions = state.getMotions().map((motion) =>
-      <MotionDiv motion={motion} key={motion.rank}/>
+  const motions = state.getMotions().map((motion, index) =>
+      <MotionDiv motion={motion} index={index} key={index}/>
   )
 
   return [<div id="motionSelect" className="side col-4" key="motionSelect">{motionTypes}</div>,

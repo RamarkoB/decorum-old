@@ -10,12 +10,10 @@ import './index.css';
 const app = ReactDOM.createRoot(document.getElementById('root')); 
 const footer = ReactDOM.createRoot(document.getElementById('footer')); 
 
-function tick(){
+setInterval(function() {
   app.render(<App />)
   footer.render(<Footer />);
-}
-
-setInterval(tick, 50);
+}, 50);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

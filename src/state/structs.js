@@ -1,3 +1,9 @@
+const Vote = {
+    NA: "NA",
+    Passed: "Passed",
+    Failed: "Failed"
+}
+
 //Delegate Classes
 const Attendence = {
     Present: 'present',
@@ -243,4 +249,22 @@ const Page = {
     unmod: "unmod",
 }
 
-export {Attendence, Delegate, Speaker, SpeakersList, Status, Timer, Page};
+class Directive {
+    constructor() {
+        this.status = Vote.NA;
+    }
+
+    pass() {
+        this.status = Vote.Passed;
+    }
+
+    fail() {
+        this.status = Vote.Failed;
+    }
+
+    reset() {
+        this.status = Vote.NA;
+    }
+}
+
+export {Attendence, Vote, Delegate, Speaker, SpeakersList, Status, Timer, Page, Directive};

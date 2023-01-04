@@ -1,18 +1,14 @@
+import { Vote } from "./structs";
+
 //Motions
 const Motions = {
     Extend: "Extend Current Motion",
-    Voting: "Voting Procedure",
+    Voting: "Enter Voting Procedure",
     Introduce: "Introduce Directives",
     Unmod: "Unmoderated Caucus",
     StrawPoll: "Straw Poll",
     RoundRobin: "Round Robin",
     Mod: "Moderated Caucus",
-}
-
-const Vote = {
-    NA: "NA",
-    Passed: "Passed",
-    Failed: "Failed"
 }
 
 class Motion {

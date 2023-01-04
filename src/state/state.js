@@ -1,4 +1,4 @@
-import {Attendence, Delegate, SpeakersList, Status, Timer, Page} from "./structs";
+import {Attendence, Delegate, SpeakersList, Status, Timer, Page, Directive} from "./structs";
 
 //State
 class State {
@@ -20,6 +20,9 @@ class State {
 
         //Pages
         this.page = Page.delegates;
+
+        //Directives
+        this.directives = [];
     }
 
     //State Delegate Methods
@@ -227,6 +230,25 @@ class State {
         return this.motions;
     }
 
+    passMotion(index){
+        this.motions[index].pass();
+        this.currentMotion = this.motions[index];
+    }
+
+    failMotion(index){
+        this.motions[index].fail();
+    }
+
+    removeMotion(index){
+        this.motions.splice(index, 1);
+    }
+
+
+    genUnmod(minutes, seconds) {
+        this.setTimer(minutes, seconds);
+        this.pauseTimer();
+    }
+
     genMod(minutes, speakingTime){
         const seconds = minutes * 60;
         if (seconds % speakingTime !== 0) {
@@ -237,6 +259,22 @@ class State {
         this.setTimer(0, speakingTime);
         this.pauseTimer();
         this.makeSpeakersList(speakers);
+    }
+
+    addDirective() {
+        this.directives.push(new Directive());
+    }
+
+    passDirective(index){
+        this.directives[index].pass();
+    }
+
+    failDirective(index){
+        this.directives[index].fail();
+    }
+
+    removeDirective(index){
+        this.directives.splice(index, 1);
     }
 }
 
