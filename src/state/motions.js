@@ -66,17 +66,30 @@ class StrawPoll extends Motion {
 }
 
 class RoundRobin extends Motion {
-    constructor() {
+    constructor(speakingTime) {
         super(Motions.RoundRobin, 4.5);
+        this.speakingTime = speakingTime;
     }
 }
 
 class Mod extends Motion {
-    constructor(min, speakingTime) {
+    constructor(min, sec, speakingTime) {
         super(Motions.Mod, 5);
         this.min = min;
+        this.sec = sec;
+        this.overallTime = min * 60 + sec;
         this.speakingTime = speakingTime;
+        this.numSpeakers = this.calcSpeakers();
+    }
+
+    calcSpeakers() {
+        if (this.overallTime % this.speakingTime !== 0) {
+            return NaN;
+        } else {
+            return (this.overallTime / this.speakingTime)
+        }
     }
 }
+
 
 export {Motions, Vote, Extend, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod};

@@ -63,12 +63,14 @@ class Speaker {
     addDelegate(del) {
         this.delegate = del;
         this.hasDel = true;
-        // this.delegate.addTimeSpoken();
+        this.delegate.addTimeSpoken();
     }
 
     removeDelegate() {
-        this.delegate.removeTimeSpoken();
-        this.delegate = null;
+        if (this.hasDel) {
+            this.delegate.removeTimeSpoken();
+            this.delegate = null;
+        }
     }
 
     hasDelegate(){
@@ -116,7 +118,7 @@ class SpeakersList {
     }
 
     removeDelegate(i, del) {
-        this.listSpeakers[i].removeDelegate(del);
+        this.listSpeakers[i].removeDelegate();
     }
 
     getName(num) {

@@ -68,10 +68,7 @@ a {
     opacity: 50%;
 }
 
-
-
 /* Dropdown CSS */
-
 .dropdown-menu {
     border: 2px black solid;
     background: #FEF9F3;
@@ -106,17 +103,20 @@ a {
 
 
 /* Card CSS */
-
 .card {
     background: inherit;
     border: 2px solid black;
     margin: 0px 0px 10px 0px;
 }
 
-.card.mini p {
+.card.mini p:not(.motion-input) {
     color:black;
     margin: 10px;
     font-size: 100%;
+}
+
+p.motion-input:last-of-type {
+    margin: 0px 0px 10px;
 }
 
 .card.mini {
@@ -141,7 +141,6 @@ a {
 
 
 /* Timer CSS */
-
 .timerDiv {
     margin: 15px 5px;
     border-radius: 1rem;
@@ -191,6 +190,10 @@ a {
 
 
 /* Buttons and Input CSS */
+.btn:focus{
+    box-shadow: none;
+}
+
 .btn-demo {
     padding: 0.5rem 2rem !important;
     border-radius: 30rem !important;
@@ -203,10 +206,6 @@ a {
 .btn-demo:hover{
     color: #fff;
     background: rgb(100, 100, 100);
-}
-
-.btn:focus{
-    box-shadow: none;
 }
 
 .btn-active {
@@ -234,9 +233,12 @@ input {
     outline: none;
 }
 
+input:invalid {
+    color: red;
+}
+
 
 /* Unmod CSS */
-
 #unmodMain {
     margin: auto;
 }
@@ -255,18 +257,59 @@ input {
 
 
 /* Motions CSS */
+.motion div {
+    border-top:  black solid 2px;
+}
+
+.motion button {
+    width: 100%;
+    padding: 0.5rem 2rem !important;
+    border-radius: 0!important;
+    border: none;
+    border-top:  black solid 2px;
+    background: black;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold !important;
+    font-size: 14px; 
+}
+
+.motion button:hover {
+    border-top:  black solid 2px;
+}
 
 .motion-input {
+    font-size: 14px;
     margin-bottom: 0;
     text-transform: uppercase;
 }
 
 .motion-input input {
+    font-size: large;
     width:2.5ch;
-    font-size: x-large;
     margin-left: 0.4ch;
+}
+
+.motion-input input:first-of-type {
+    margin-top: 10px;
+}
+
+.motion-text {
+    margin-bottom: 0;
+}
+
+.motion-text input {
+    font-size: x-large;
+    width:2.5ch;
+    margin-left: 0.4ch; 
+}
+
+.motion-text span {
+    font-size: x-large;
+    margin-left: 10px;
 }
 
 .directive input {
     text-align: center;
+    width: 90%;
 }

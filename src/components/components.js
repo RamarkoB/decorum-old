@@ -1,7 +1,7 @@
 import state from '../state/state';
-import {MotionDiv, DirectiveDiv} from './motiondivs';
+import { MakeMotionDiv, MotionDiv, DirectiveDiv } from './motiondivs';
 import { Attendence, Status } from './../state/structs';
-import {Motions, Extend, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod} from '../state/motions';
+import { Motions } from '../state/motions';
 
 //Small Components
 function DelegateDiv(props) {
@@ -20,48 +20,18 @@ function DelegateDiv(props) {
   }
 }
 
-function LilMotionDiv(props) {
-  function addMotion() {
-      switch (props.motion) {
-          case Motions.Extend:
-              state.addMotion(new Extend());
-              break;
-          case Motions.Voting:
-              state.addMotion(new Voting(0, 0));
-              break;
-          case Motions.Introduce:
-              state.addMotion(new Introduce());
-              break;
-          case Motions.Unmod:
-              state.addMotion(new Unmod(0, 0));
-              break;
-          case Motions.RoundRobin:
-              state.addMotion(new RoundRobin());
-              break;
-          case Motions.StrawPoll:
-              state.addMotion(new StrawPoll());
-              break;
-          case Motions.Mod:
-              state.addMotion(new Mod(0, 0));
-              break;
-
-            // no default
-      }
-  }
-
-  return  <div className="card mini motion" onClick={addMotion}><p>{props.motion}</p></div>
-}
-
 function SpeakerDiv(props) {
   function changeDel(del){
       const index = state.getDelegates().indexOf(del);
+      
+      state.removeSpeaker(props.index);
       state.addSpeaker(props.index, index);
   }
 
   const present = state.getPresent();
   const presentDels = present.length > 0 ?
     present.map(del => <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
-        {del.getName()}
+        {del.getName()} {del.getTimesSpoken()}
         </a>):
         <a className="dropdown-item text-center text-uppercase"> No Delegates Present </a>
     
@@ -188,9 +158,11 @@ function DelegatePage() {
                 </div>
                 <div className='card'>
                     <p>A Simple Majority requires</p>
-                    <h1>{numPresent % 2 === 0 ?
-                    Math.round(numPresent * 1/2) + 1:
-                    Math.round(numPresent * 1/2)}</h1>
+                    <h1>
+                        {numPresent === 0 ? 0: numPresent % 2 === 0 ?
+                        Math.round(numPresent * 1/2) + 1:
+                        Math.round(numPresent * 1/2)}
+                    </h1>
                     <p>Delegates</p>
                 </div>
                 {sigCount}
@@ -253,7 +225,7 @@ function DirectivesPage() {
 
 function MotionsPage() {
   const motionTypes = Object.values(Motions).map((motion) =>
-      <LilMotionDiv motion={motion} key={motion}/>
+      <MakeMotionDiv motion={motion} key={motion}/>
   );
   const motions = state.getMotions().map((motion, index) =>
       <MotionDiv motion={motion} index={index} key={index}/>
