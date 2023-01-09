@@ -1,5 +1,5 @@
 import state from '../state/state';
-import { MakeMotionDiv, MotionDiv, DirectiveDiv } from './motiondivs';
+import { MakeMotionDiv, MotionDiv, DirectiveDiv, stringify } from './motiondivs';
 import { Attendence, Status } from './../state/structs';
 import { Motions } from '../state/motions';
 
@@ -85,10 +85,6 @@ function TimerDiv() {
 
   }
 
-  function stringify(num) {
-      return (num < 10 ? "0" + String(num) : String(num));
-  }
-
   const placeholderMin = stringify(state.getLength().min);
   const placeholderSec = stringify(state.getLength().sec);
   const timerMin = stringify(state.getTime().minutes);
@@ -110,9 +106,8 @@ function TimerDiv() {
       </div>
   }
 
-
   return  <div>
-              <div className="timerDiv">
+              <div className={state.getTimerStatus() === Status.Done ? "timerDiv pink" : "timerDiv"}>
                   <div className="timer py-4" key="timer">
                       {timerNums}
                   </div>
@@ -144,7 +139,7 @@ function DelegatePage() {
                     </div>
 
 
-    return [<div id="delList" className="side col-8" key="delList">{delegates}</div>, 
+    return [<div id="delList" className="left side col-8" key="delList">{delegates}</div>, 
             <div id="delMain" className="side col-4" key="delMain">
                 <div className='card'>
                     <p>There are</p>
@@ -177,10 +172,6 @@ function UnmodPage() {
 }
 
 function ModPage() {
-  const speakers = state.getSpeakers().map((speaker, index) =>
-      <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
-  );
-
   function lastSpeaker() {
     state.lastSpeaker();
   }
@@ -188,6 +179,10 @@ function ModPage() {
   function nextSpeaker() {
     state.nextSpeaker();
   }
+
+  const speakers = state.getSpeakers().map((speaker, index) =>
+  <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
+);
 
   const speakerChange = <ul className="list-inline">
                             <li className="list-inline-item">
@@ -198,9 +193,11 @@ function ModPage() {
                             </li>
                         </ul>
 
-  const speakerNum = <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>;
+  const speakerNum = state.speakers?
+    <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>:
+    <h1> No Speakers List</h1>;
 
-  return    [<div id="speakersList" className="side col-4" key="speakersList">
+  return    [<div id="speakersList" className="left side col-4" key="speakersList">
                 {speakers}
             </div>,
             <div id="modMain" className="side col-8" key="modMain">
@@ -215,8 +212,15 @@ function DirectivesPage() {
         <DirectiveDiv status={directive.status} index={index} key={index}/>
     )
 
-    return  [<div id="directivesList" className="side col-4" key="directivesList">
-                <button className="btn btn-demo" onClick={() => state.addDirective()}>Add Directive</button>
+    return  [<div id="directivesList" className="left side col-4" key="directivesList">
+                <ul >
+                    <li className='dirButton'>
+                        <button className="btn btn-demo" onClick={() => state.addDirective()}>Add Directive</button>
+                    </li>
+                    <li className='dirButton'>
+                        <button className="btn btn-demo" onClick={() => state.clearDirectives()}>Clear Directives</button>
+                    </li>
+                </ul>
             </div>,
             <div id="directivesMain" className="side col-8" key="directivesMain">
                 {directives}
@@ -231,7 +235,7 @@ function MotionsPage() {
       <MotionDiv motion={motion} index={index} key={index}/>
   )
 
-  return [<div id="motionSelect" className="side col-4" key="motionSelect">{motionTypes}</div>,
+  return [<div id="motionSelect" className="left side col-4" key="motionSelect">{motionTypes}</div>,
           <div id="motionsMain" className="side col-8" key="motionsMain">{motions}</div>]
 }
 

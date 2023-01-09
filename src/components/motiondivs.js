@@ -4,6 +4,9 @@ import { Motions, Extend, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod }
 import { Vote } from "../state/structs"
 import state from "./../state/state"
 
+function stringify(num) {
+    return (num < 10 ? "0" + String(num) : String(num));
+}
 
 //Module to vote on a Directive or Motion
 function VoteModule(props) {
@@ -110,6 +113,7 @@ function MakeUnmodDiv() {
 }
 
 function MakeModDiv() {
+    const [topic, setTopic] = useState("");
     const [min, setMin] = useState(0);
     const [sec, setSec] = useState(0);
     const [speakingTime, setSpeakingTime] = useState(0);
@@ -118,16 +122,20 @@ function MakeModDiv() {
         if (isNaN(Number(min)) || isNaN(Number(sec)) || isNaN(Number(speakingTime))) {
             console.log("we got a not a number ovah here!");
         } else {
-            state.addMotion(new Mod(Number(min), Number(sec), Number(speakingTime)));
+            state.addMotion(new Mod(topic, Number(min), Number(sec), Number(speakingTime)));
         }
     }
 
     return  [<div key="modInput">
                 <p className="motion-input">
+                    <input id="makemod-topic" placeholder="Topic" onChange={(e) => setTopic(e.target.value)}></input> 
+                </p>
+                <p className="motion-input">
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setMin(e.target.value)}></input> Min 
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSec(e.target.value)}></input> Sec 
                 </p>
-                <p className="motion-input"><input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSpeakingTime(e.target.value)}></input> Speaking Time </p>
+                <p className="motion-input">
+                <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSpeakingTime(e.target.value)}></input> Speaking Time </p>
             </div>, 
             <button className='btn' onClick={addMotion} key="modButton">
                     Add Motion
@@ -173,7 +181,6 @@ function MakeMotionDiv(props) {
     }
 
     function addMotion() {
-        switchExpand();
         switch (props.motion) {
             case Motions.Extend:
                 state.addMotion(new Extend());
@@ -226,30 +233,33 @@ function ExtendDiv() {
 
 function VotingDiv(props) {
     return  <p className="motion-text">
-                <span>{props.motion.speakingTime}</span>  Speaking Time 
-                <span>{props.motion.speakers}</span>  Speakers For/Against 
+                <span>{stringify(props.motion.speakingTime)}</span>  Speaking Time 
+                <span>{stringify(props.motion.speakers)}</span>  Speakers For/Against 
             </p>
 }
 
 function UnmodDiv(props) {
     return  <p className="motion-text">
-                <span>{props.motion.min}</span> Min 
-                <span>{props.motion.sec}</span> Sec 
+                <span>{stringify(props.motion.min)}</span> Min 
+                <span>{stringify(props.motion.sec)}</span> Sec 
             </p>
             
 }
 
 function ModDiv(props) {
-    return  <p className="motion-text">
-                <span>{props.motion.min}</span> Min 
-                <span>{props.motion.sec}</span> Sec 
-                <span>{props.motion.speakingTime}</span> Speaking Time
+    return  [<p className='motion-text mod-topic'>
+                <span>{props.motion.topic}</span>
             </p>
+            ,<p className="motion-text">
+                <span>{stringify(props.motion.min)}</span> Min 
+                <span>{stringify(props.motion.sec)}</span> Sec 
+                <span>{stringify(props.motion.speakingTime)}</span> Speaking Time
+            </p>]
 }
 
 function RoundRobinDiv(props) {
     return  <p className="motion-text">
-                <span>{props.motion.speakingTime}</span> Speaking Time
+                <span>{stringify(props.motion.speakingTime)}</span> Speaking Time
             </p>
 }
 
@@ -301,4 +311,4 @@ function DirectiveDiv(props){
 }
 
 //Exports
-export { MakeMotionDiv, MotionDiv, DirectiveDiv};
+export { MakeMotionDiv, MotionDiv, DirectiveDiv, stringify};

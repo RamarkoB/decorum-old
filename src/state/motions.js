@@ -73,8 +73,9 @@ class RoundRobin extends Motion {
 }
 
 class Mod extends Motion {
-    constructor(min, sec, speakingTime) {
+    constructor(topic, min, sec, speakingTime) {
         super(Motions.Mod, 5);
+        this.topic = topic;
         this.min = min;
         this.sec = sec;
         this.overallTime = min * 60 + sec;

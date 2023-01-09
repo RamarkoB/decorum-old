@@ -1,4 +1,5 @@
 import {Attendence, Delegate, SpeakersList, Status, Timer, Page, Directive} from "./structs";
+import { Motions } from "./motions";
 
 //State
 class State {
@@ -131,9 +132,23 @@ class State {
 
     getSpeaker(num){
         if (this.getSpeakersList().listSpeakers[num].getDelegate() === null) {
-            return "None";
+            switch (this.currentMotion.type) {
+                case Motions.Voting:
+                    if (num % 2 === 0 ) {
+                        return "For Speaker " + ((num % 2) + 1);
+                    } else {
+                        return "Against Speaker " + ((num % 2) + 1);
+                    }
+                case Motions.Mod:
+                    return "Speaker " + (num + 1);
+                    
+                default:
+                    break;
+            }
+        } else {
+            return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
         }
-        return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
+
     }
 
     updateSpeakers(cmd, args){
@@ -184,7 +199,7 @@ class State {
         if (this.timer === null) {
             return Status.Inactive;
         } else {
-            return this.timer.status;
+            return this.timer.getStatus();
         }
     }
 
@@ -218,7 +233,24 @@ class State {
     }
 
     getOtherPages() {
-        return Object.values(Page).filter(page => {if (page === this.page){return false;} return true;})
+        if (this.currentMotion) {
+            return Object.values(Page)
+                    .filter(page => {if (page === this.page){return false;} return true;})
+                    .filter(page => {switch (this.currentMotion.type) {
+                    case Motions.Mod:
+                        if (page === Page.unmod) {return false} return true;
+                    case Motions.Unmod:
+                        if (page === Page.mod) {return false} return true;
+                    case Motions.Voting:
+                        if (page === Page.unmod) {return false} return true;
+                    default:
+                        if (page === Page.mod || page === Page.unmod) {return false} return true;
+                    }});
+        } else {
+            return Object.values(Page)
+                    .filter(page => {if (page === this.page){return false;} return true;})
+                    .filter(page => {if (page === Page.mod || page === Page.unmod) {return false} return true;});
+        }
     }
 
     //Motion Methods
@@ -231,8 +263,32 @@ class State {
     }
 
     passMotion(index){
-        this.motions[index].pass();
-        this.currentMotion = this.motions[index];
+        const motion = this.motions[index];
+        motion.pass();
+        this.currentMotion = motion;
+
+        switch (motion.type) {
+            case Motions.Voting:
+                this.genMod(motion.speakers * 2, motion.speakingTime);
+                this.toPage(Page.directives);
+                break;
+            case Motions.Introduce:
+                this.toPage(Page.directives);
+                break;
+            case Motions.Unmod:
+                this.genUnmod(motion.min, motion.sec);
+                break;
+            case Motions.RoundRobin:
+                this.genMod(this.numPresent(), motion.speakingTime);
+                break;
+            case Motions.Mod:
+                this.genMod(motion.numSpeakers, motion.speakingTime);
+                break;
+            default:
+                break;
+        }
+
+        this.clearMotions();
     }
 
     failMotion(index){
@@ -243,24 +299,25 @@ class State {
         this.motions.splice(index, 1);
     }
 
+    clearMotions(){
+        this.motions = [];
+    }
+
 
     genUnmod(minutes, seconds) {
         this.setTimer(minutes, seconds);
         this.pauseTimer();
+        this.toPage(Page.unmod);
     }
 
-    genMod(minutes, speakingTime){
-        const seconds = minutes * 60;
-        if (seconds % speakingTime !== 0) {
-            console.error("The number of minutes is not divisible by the number of speakers");
-        }
-    
-        const speakers = Math.round(seconds / speakingTime);
+    genMod(numSpeakers, speakingTime){
         this.setTimer(0, speakingTime);
         this.pauseTimer();
-        this.makeSpeakersList(speakers);
+        this.makeSpeakersList(numSpeakers);
+        this.toPage(Page.mod);
     }
 
+    //Directive Methods
     addDirective() {
         this.directives.push(new Directive());
     }
@@ -276,33 +333,53 @@ class State {
     removeDirective(index){
         this.directives.splice(index, 1);
     }
+
+    clearDirectives(){
+        this.directives = [];
+    }
 }
 
-let delNames = ['Alex Obtre Lumumba',
-        'Amb. Ernest Niyokindi',
-        'Amb. Francois Nkulikiyimfura',
-        'Amb. Jean Tambu Mikuma',
-        'Amb. Samwel Shelukundo',
-        'Christophe Bazivamo',
-        'Dr. Anthony L. Kafumbe',
-        'Dr. James Otieno Jowi',
-        'Dr. Kevit Desai',
-        'Dr. Novat Twungubumwe',
-        'Dr. Patrick Njoroge',
-        'Emile Nguza Arao',
-        'Eng. Steven D.M. Mlote',
-        'H.E. Ms. Doreen Ruth Amule',
-        'H.E. Prof. Judy Wakhungu',
-        'Hon. Amb. Ezéchiel Nibigira',
-        'Justice Nestor Kayobera',
-        'Kenneth A. Bagamuhunda',
-        'Lilian K. Mukoronia',
-        'Muyambi Fortunate',
-        'Prof. Gaspard Banyankimbona',
-        'Rt. Hon Martin Ngoga',
-        'Vivienne Yeda Apopo',
-        'Yufnalis N. Okubo'];
-let state = new State(delNames);
-state.genMod(8, 30)
+function genDelegates(num){
+    const emotions = ["Happy", "Sad", "Excited", "Scared", "Angry", "Shy", "Silly", 
+                    "Bored", "Tired", "Calm", "Dissapointed", "Suprised", "Jealous",
+                    "Proud", "Disgusted", "Rambunctious"]
+    const fruits = ["Apple", "Grape", "Banana", "Orange", "Pineapple", "Mango", "Pear", 
+                    "Watermelon", "Lemon", "Lime", "Peach", "Kiwi", "Plum", "Cherry", 
+                    "Strawberry", "Blueberry", "Papaya"]
+    const names = []
+    for (let i = 0; i < num; i++)
+    {
+        const emotion = emotions[Math.round((emotions.length - 1) * Math.random())]
+        const fruit = fruits[Math.round((fruits.length - 1) * Math.random())]
+        names.push(emotion + " " + fruit)
+    }
+    return names;
+}
+
+// const delNames = ['Alex Obtre Lumumba',
+//         'Amb. Ernest Niyokindi',
+//         'Amb. Francois Nkulikiyimfura',
+//         'Amb. Jean Tambu Mikuma',
+//         'Amb. Samwel Shelukundo',
+//         'Christophe Bazivamo',
+//         'Dr. Anthony L. Kafumbe',
+//         'Dr. James Otieno Jowi',
+//         'Dr. Kevit Desai',
+//         'Dr. Novat Twungubumwe',
+//         'Dr. Patrick Njoroge',
+//         'Emile Nguza Arao',
+//         'Eng. Steven D.M. Mlote',
+//         'H.E. Ms. Doreen Ruth Amule',
+//         'H.E. Prof. Judy Wakhungu',
+//         'Hon. Amb. Ezéchiel Nibigira',
+//         'Justice Nestor Kayobera',
+//         'Kenneth A. Bagamuhunda',
+//         'Lilian K. Mukoronia',
+//         'Muyambi Fortunate',
+//         'Prof. Gaspard Banyankimbona',
+//         'Rt. Hon Martin Ngoga',
+//         'Vivienne Yeda Apopo',
+//         'Yufnalis N. Okubo'];
+const state = new State(genDelegates(20));
 
 export default state;

@@ -50,18 +50,25 @@ a {
     text-decoration: none;
 }
 
+h3 {
+    font-size: calc(1.5rem + .6vw);
+}
+
 .side {
     text-align: center;
     height: 100%;
     padding: 10px;
     overflow-y: scroll;
-    border-right: 3px solid black;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
 
 .side::-webkit-scrollbar  {
     display: none;
+}
+
+.left {
+    border-right: 3px solid black;
 }
 
 .notready {
@@ -309,7 +316,26 @@ input:invalid {
     margin-left: 10px;
 }
 
+.mod-topic {
+    margin-top: 10px;
+}
+
+#makemod-topic {
+    width: 100%;
+    text-align: center;
+    margin-left: 0;
+}
+
+/* Directives CSS */
 .directive input {
     text-align: center;
     width: 90%;
+}
+
+.dirButton {
+    display: block;
+}
+
+#directivesList button {
+    margin-bottom: 10px;
 }

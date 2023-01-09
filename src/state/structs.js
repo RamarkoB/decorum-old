@@ -151,7 +151,8 @@ class SpeakersList {
 const Status = {
     Inactive: 'inactive',
     Active: 'active',
-    Paused: 'paused'
+    Paused: 'paused',
+    Done: 'finished'
 }
 
 class Timer {
@@ -200,6 +201,7 @@ class Timer {
             clearInterval(this.interval);
             this.offset = 0;
             this.active = false;
+            this.status = Status.Done;
         }
     }
 
