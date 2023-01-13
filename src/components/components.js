@@ -1,7 +1,8 @@
 import state from '../state/state';
 import { MakeMotionDiv, MotionDiv, DirectiveDiv, stringify } from './motiondivs';
-import { Attendence, Status } from './../state/structs';
+import { Attendence, Status, Vote } from './../state/structs';
 import { Motions } from '../state/motions';
+import { useState } from 'react';
 
 //Small Components
 function DelegateDiv(props) {
@@ -28,12 +29,18 @@ function SpeakerDiv(props) {
       state.addSpeaker(props.index, index);
   }
 
-  const present = state.getPresent();
-  const presentDels = present.length > 0 ?
-    present.map(del => <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
-        {del.getName()} {del.getTimesSpoken()}
-        </a>):
-        <a className="dropdown-item text-center text-uppercase"> No Delegates Present </a>
+
+  const [search, setSearch] = useState("");
+  const present = state.filterPresent(search);
+  const presentDels = (state.getPresent().length > 0) ?
+    [<input placeholder='Search...' onChange={(e) => setSearch(e.target.value)}></input>,
+    present.length > 0 ? 
+        present.map(del => 
+            <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
+                {del.getName()} {del.getTimesSpoken()}
+            </a>):
+        <a className="dropdown-item text-center text-uppercase"> No Delegates Found </a>]:
+    <a className="dropdown-item text-center text-uppercase"> No Delegates Present </a>;
     
 
   return  <div className="dropdown">
@@ -43,7 +50,7 @@ function SpeakerDiv(props) {
                   </div>
               </a>
               <div className="dropdown-menu">
-                  {presentDels}
+                    {presentDels}
               </div>
           </div>
 }
@@ -133,7 +140,7 @@ function DelegatePage() {
     const numPresent = state.numPresent();
 
     var sigCount =  <div id='sigcount' className='notready card inactive'>
-                        <p>A Directive requires</p>
+                        <p>A Directive Requires</p>
                         <h1>{state.signum}</h1>
                         <p>Signatories</p>
                     </div>
@@ -147,12 +154,12 @@ function DelegatePage() {
                     <p>Delegates</p>
                 </div>
                 <div className='card'>
-                    <p>A 2/3 Majority requires</p>
+                    <p>A 2/3 Majority Requires</p>
                     <h1>{Math.round(numPresent * 2/3)}</h1>
                     <p>Delegates</p>
                 </div>
                 <div className='card'>
-                    <p>A Simple Majority requires</p>
+                    <p>A Simple Majority Requires</p>
                     <h1>
                         {numPresent === 0 ? 0: numPresent % 2 === 0 ?
                         Math.round(numPresent * 1/2) + 1:
@@ -171,7 +178,7 @@ function UnmodPage() {
   
 }
 
-function ModPage() {
+function SpeakersPage() {
   function lastSpeaker() {
     state.lastSpeaker();
   }
@@ -212,6 +219,25 @@ function DirectivesPage() {
         <DirectiveDiv status={directive.status} index={index} key={index}/>
     )
 
+    function pastDirectives() {
+        console.log(
+            state.pastdirectives
+        );
+    }
+
+    function passedDirectives() {
+        console.log(
+            state.pastdirectives.filter((dir) => {if (dir.status === Vote.Passed) {return true;} return false;})
+        );
+
+    }
+
+    function failedDirectives() {
+        console.log(
+            state.pastdirectives.filter((dir) => {if (dir.status === Vote.Failed) {return true;} return false;})
+        );
+    }
+
     return  [<div id="directivesList" className="left side col-4" key="directivesList">
                 <ul >
                     <li className='dirButton'>
@@ -219,6 +245,15 @@ function DirectivesPage() {
                     </li>
                     <li className='dirButton'>
                         <button className="btn btn-demo" onClick={() => state.clearDirectives()}>Clear Directives</button>
+                    </li>
+                    <li className='dirButton'>
+                        <button className="btn btn-demo" onClick={pastDirectives}>All Past Directives</button>
+                    </li>
+                    <li className='dirButton'>
+                        <button className="btn btn-demo" onClick={passedDirectives}>Passed Directives</button>
+                    </li>
+                    <li className='dirButton'>
+                        <button className="btn btn-demo" onClick={failedDirectives}>Failed Directives</button>
                     </li>
                 </ul>
             </div>,
@@ -231,12 +266,11 @@ function MotionsPage() {
   const motionTypes = Object.values(Motions).map((motion) =>
       <MakeMotionDiv motion={motion} key={motion}/>
   );
-  const motions = state.getMotions().map((motion, index) =>
-      <MotionDiv motion={motion} index={index} key={index}/>
-  )
+  const motions = state.getMotions()
+                .map((motion, index) => <MotionDiv motion={motion} index={index} key={index}/> );
 
   return [<div id="motionSelect" className="left side col-4" key="motionSelect">{motionTypes}</div>,
           <div id="motionsMain" className="side col-8" key="motionsMain">{motions}</div>]
 }
 
-export {DelegatePage, UnmodPage, ModPage, DirectivesPage, MotionsPage};
+export {DelegatePage, UnmodPage, SpeakersPage, DirectivesPage, MotionsPage};

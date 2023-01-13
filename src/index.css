@@ -104,6 +104,10 @@ h3 {
     background-color: #AFE1AF!important;
 }
 
+.grey-text {
+    color: grey!important;
+}
+
 .notready {
     opacity: 50%;
 }
@@ -142,8 +146,8 @@ p.motion-input:last-of-type {
     padding: 10px;
 }
 
-#delMain .card {
-    padding: 0;
+#delMain p {
+    margin-bottom: 0.5rem;
 }
 
 
@@ -264,10 +268,6 @@ input:invalid {
 
 
 /* Motions CSS */
-.motion div {
-    border-top:  black solid 2px;
-}
-
 .motion button {
     width: 100%;
     padding: 0.5rem 2rem !important;
@@ -282,6 +282,14 @@ input:invalid {
 }
 
 .motion button:hover {
+    border-top:  black solid 2px;
+}
+
+.motion .dropdown {
+    border-top:  black solid 2px;
+}
+
+.motion-inputs {
     border-top:  black solid 2px;
 }
 
@@ -320,10 +328,22 @@ input:invalid {
     margin-top: 10px;
 }
 
+.speaker-paren {
+    margin-left: 0!important;
+}
+
 #makemod-topic {
     width: 100%;
     text-align: center;
     margin-left: 0;
+}
+
+/* Mods CSS */
+.dropdown-menu input {
+    width: 100%;
+    text-align: center;
+    border-bottom: black solid 2px;
+    padding-bottom: 8px;
 }
 
 /* Directives CSS */

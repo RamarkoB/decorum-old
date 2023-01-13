@@ -24,6 +24,7 @@ class State {
 
         //Directives
         this.directives = [];
+        this.pastdirectives = [];
     }
 
     //State Delegate Methods
@@ -76,6 +77,10 @@ class State {
             }
         });
         return present;
+    }
+
+    filterPresent(search) {
+        return this.getPresent().filter((del) => del.getName().toLowerCase().includes(search.toLowerCase()));
     }
 
     updateAttendence(num, attendence){
@@ -141,7 +146,8 @@ class State {
                     }
                 case Motions.Mod:
                     return "Speaker " + (num + 1);
-                    
+                case Motions.RoundRobin:
+                    return "Speaker " + (num + 1);
                 default:
                     break;
             }
@@ -240,16 +246,16 @@ class State {
                     case Motions.Mod:
                         if (page === Page.unmod) {return false} return true;
                     case Motions.Unmod:
-                        if (page === Page.mod) {return false} return true;
+                        if (page === Page.speakers) {return false} return true;
                     case Motions.Voting:
                         if (page === Page.unmod) {return false} return true;
                     default:
-                        if (page === Page.mod || page === Page.unmod) {return false} return true;
+                        if (page === Page.speakers || page === Page.unmod) {return false} return true;
                     }});
         } else {
             return Object.values(Page)
                     .filter(page => {if (page === this.page){return false;} return true;})
-                    .filter(page => {if (page === Page.mod || page === Page.unmod) {return false} return true;});
+                    .filter(page => {if (page === Page.speakers || page === Page.unmod) {return false} return true;});
         }
     }
 
@@ -259,7 +265,64 @@ class State {
     }
 
     getMotions(){
-        return this.motions;
+        const motions = this.motions.sort((a,b) => {
+            if (a.rank > b.rank) {
+                return 1;
+            } else if (a.rank < b.rank) {
+                return -1;
+            } else {
+                switch (a.type) {
+                    case Motions.Voting:
+                        if ((a.speakingTime * a.numSpeakers) < (b.speakingTime * b.numSpeakers) ) {
+                            return 1;
+                        } else if ((a.speakingTime * a.numSpeakers) > (b.speakingTime * b.numSpeakers) ) {
+                            return -1;
+                        } if (a.numSpeakers < b.numSpeakers) {
+                            return 1;
+                        } else if ((a.numSpeakers > b.numSpeakers) ) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+
+                    case Motions.Unmod:
+                        if (a.overallTime < b.overallTime) {
+                            return 1;
+                        } else if (a.overallTime > b.overallTime) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }    
+
+                    case Motions.RoundRobin:
+                        if (a.speakingTime < b.speakingTime) {
+                            return 1;
+                        } else if (a.speakingTime > b.speakingTime) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+
+                    case Motions.Mod:
+                        if (a.overallTime < b.overallTime) {
+                            return 1;
+                        } else if (a.overallTime > b.overallTime) {
+                            return -1;
+                        } else if (a.numSpeakers < b.numSpeakers) {
+                            return 1;
+                        } else if (a.numSpeakers > b.numSpeakers) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }  
+                    
+                    default:
+                        return 0;
+                }
+            }
+        });
+
+        return motions;
     }
 
     passMotion(index){
@@ -314,7 +377,7 @@ class State {
         this.setTimer(0, speakingTime);
         this.pauseTimer();
         this.makeSpeakersList(numSpeakers);
-        this.toPage(Page.mod);
+        this.toPage(Page.speakers);
     }
 
     //Directive Methods
@@ -323,11 +386,31 @@ class State {
     }
 
     passDirective(index){
-        this.directives[index].pass();
+        switch (this.pastdirectives.indexOf(this.directives[index])) {
+            case -1:
+                this.directives[index].pass();
+                this.pastdirectives.push(this.directives[index]);
+                break;
+            default:
+                this.directives.splice(this.pastdirectives.indexOf(this.directives[index]), 1);
+                this.directives[index].pass();
+                this.pastdirectives.push(this.directives[index]);
+                break;
+        }
     }
 
     failDirective(index){
-        this.directives[index].fail();
+        switch (this.pastdirectives.indexOf(this.directives[index])) {
+            case -1:
+                this.directives[index].fail();
+                this.pastdirectives.push(this.directives[index]);
+                break;
+            default:
+                this.directives.splice(this.pastdirectives.indexOf(this.directives[index]), 1);
+                this.directives[index].fail();
+                this.pastdirectives.push(this.directives[index]);
+                break;
+        }
     }
 
     removeDirective(index){
@@ -342,10 +425,16 @@ class State {
 function genDelegates(num){
     const emotions = ["Happy", "Sad", "Excited", "Scared", "Angry", "Shy", "Silly", 
                     "Bored", "Tired", "Calm", "Dissapointed", "Suprised", "Jealous",
-                    "Proud", "Disgusted", "Rambunctious"]
+                    "Proud", "Disgusted", "Rambunctious", "Obnoxious", "Confused",
+                    "Bossy", "Sneaky", "Nervous", "Sleepy", "Mean", "Grumpy", "Impatient",
+                    "Fearful", "Frustrated", "Curious", "Confident", "Optimistic", "Creative",
+                    "Lonely", "Powerful", "Energetic", "Apathetic", "Respected", "Loving"]
     const fruits = ["Apple", "Grape", "Banana", "Orange", "Pineapple", "Mango", "Pear", 
                     "Watermelon", "Lemon", "Lime", "Peach", "Kiwi", "Plum", "Cherry", 
-                    "Strawberry", "Blueberry", "Papaya"]
+                    "Guava", "Lychee", "Strawberry", "Blueberry", "Papaya", "Dragonfruit",
+                    "Coconut", "Pomegranate", "Passion Fruit", "Raspberry", "Apricot",
+                    "Clementine", "Cantelope", "Date", "Fig", "Kumquat", "Mandarin", 
+                    "Prune", "Raisin", "Grapefruit", "Blackberry", "Honeywdew"]
     const names = []
     for (let i = 0; i < num; i++)
     {
@@ -380,6 +469,6 @@ function genDelegates(num){
 //         'Rt. Hon Martin Ngoga',
 //         'Vivienne Yeda Apopo',
 //         'Yufnalis N. Okubo'];
-const state = new State(genDelegates(20));
+const state = new State(genDelegates(200));
 
 export default state;

@@ -56,20 +56,21 @@ class Delegate {
 class Speaker {
     constructor() {
         this.delegate = null;
-        this.hasDel = false;
         this.spoken = false;
+        this.hasDel = false;
     }
 
     addDelegate(del) {
         this.delegate = del;
-        this.hasDel = true;
         this.delegate.addTimeSpoken();
+        this.hasDel = true;
     }
 
     removeDelegate() {
         if (this.hasDel) {
             this.delegate.removeTimeSpoken();
             this.delegate = null;
+            this.hasDel = false;
         }
     }
 
@@ -249,12 +250,13 @@ const Page = {
     delegates: "delegates",
     motions: "motions",
     directives: "directives",
-    mod: "mod",
+    speakers: "speakers",
     unmod: "unmod",
 }
 
 class Directive {
     constructor() {
+        this.name = null;
         this.status = Vote.NA;
     }
 

@@ -71,11 +71,11 @@ function MakeVotingDiv() {
         if (isNaN(Number(min)) || isNaN(Number(sec)) || isNaN(Number(speakers))) {
             console.log("we got a not a number ovah here!");
         } else {
-            state.addMotion(new Voting(speakers, 60 * min + sec));
+            state.addMotion(new Voting(Number(speakers), Number(60 * min + sec)));
         }
     }
 
-    return  [<div key="votingInput">
+    return  [<div className="motion-inputs" key="votingInput">
                 <p className="motion-input">
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setMin(e.target.value)}></input> Min 
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSec(e.target.value)}></input> Sec 
@@ -97,11 +97,11 @@ function MakeUnmodDiv() {
         if (isNaN(Number(min)) || isNaN(Number(sec))) {
             console.log("we got a not a number ovah here!");
         } else {
-            state.addMotion(new Unmod(min, sec));
+            state.addMotion(new Unmod(Number(min), Number(sec)));
         }
     }
 
-    return  [<div key="unmodInput">
+    return  [<div className="motion-inputs" key="unmodInput">
                 <p className="motion-input">
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setMin(e.target.value)}></input> Min 
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSec(e.target.value)}></input> Sec 
@@ -109,6 +109,27 @@ function MakeUnmodDiv() {
             </div>, 
             <button className='btn' onClick={addMotion} key="UnmodButton">
                     Add Motion
+            </button>]
+}
+
+function MakeRoundRobinDiv() {
+    const [speakingTime, setSpeakingTime] = useState(0);
+
+    function addMotion() {
+        if (isNaN(Number(speakingTime))) {
+            console.log("we got a not a number ovah here!");
+        } else {
+            state.addMotion(new RoundRobin(Number(speakingTime)));
+        }
+    }
+
+    return  [<div className="motion-inputs" key="roundRobinInput">
+                <p className="motion-input">
+                    <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSpeakingTime(e.target.value)}></input> Speaking Time 
+                </p>
+            </div>,
+            <button className='btn' onClick={addMotion} key="roundRobinButton">
+                Add Motion
             </button>]
 }
 
@@ -126,7 +147,7 @@ function MakeModDiv() {
         }
     }
 
-    return  [<div key="modInput">
+    return  [<div className="motion-inputs" key="modInput">
                 <p className="motion-input">
                     <input id="makemod-topic" placeholder="Topic" onChange={(e) => setTopic(e.target.value)}></input> 
                 </p>
@@ -142,29 +163,9 @@ function MakeModDiv() {
             </button>]
 }
 
-function MakeRoundRobinDiv() {
-    const [speakingTime, setSpeakingTime] = useState(0);
-
-    function addMotion() {
-        if (isNaN(Number(speakingTime))) {
-            console.log("we got a not a number ovah here!");
-        } else {
-            state.addMotion(new RoundRobin(speakingTime));
-        }
-    }
-
-    return  [<div key="roundRobinInput">
-                <p className="motion-input">
-                    <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSpeakingTime(e.target.value)}></input> Speaking Time 
-                </p>
-            </div>,
-            <button className='btn' onClick={addMotion} key="roundRobinButton">
-                Add Motion
-            </button>]
-}
-
 function MakeMotionDiv(props) {
     const [expanded, setExpand] = useState(false);
+
 
     function getMotionInput() {
         switch (props.motion) {
@@ -185,23 +186,14 @@ function MakeMotionDiv(props) {
             case Motions.Extend:
                 state.addMotion(new Extend());
                 break;
-            case Motions.Voting:
-                state.addMotion(new Voting(0, 0));
-                break;
             case Motions.Introduce:
                 state.addMotion(new Introduce());
-                break;
-            case Motions.Unmod:
-                state.addMotion(new Unmod(0, 0));
                 break;
             case Motions.RoundRobin:
                 state.addMotion(new RoundRobin());
                 break;
             case Motions.StrawPoll:
                 state.addMotion(new StrawPoll());
-                break;
-            case Motions.Mod:
-                state.addMotion(new Mod(0, 0));
                 break;
 
                 // no default
@@ -216,9 +208,40 @@ function MakeMotionDiv(props) {
         }
     }
 
+
+    function changeDel(del){
+        setDel(del);
+        console.log(del.getName());
+    }
+
+    const [search, setSearch] = useState("");
+    const [delegate, setDel] = useState(null);
+    const present = state.filterPresent(search);
+    const presentDels = (state.getPresent().length > 0) ?
+      [<input placeholder='Search...' onChange={(e) => setSearch(e.target.value)}></input>,
+      present.length > 0 ? 
+          present.map(del => 
+              <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
+                  {del.getName()} {del.getTimesSpoken()}
+              </a>):
+          <a className="dropdown-item text-center text-uppercase"> No Delegates Found </a>]:
+      <a className="dropdown-item text-center text-uppercase"> No Delegates Present </a>;
+
     return  <div className="card mini motion" >
-                {expanded? [<p key="Motion Name" onClick={switchExpand}>{props.motion}</p>, getMotionInput()] 
-                : <p onClick={switchExpand}>{props.motion}</p>}
+                {expanded? 
+                    [<p key="Motion Name" onClick={switchExpand}>{props.motion}</p>,
+                    <div className="dropdown">
+                        <a href="#" data-bs-toggle="dropdown">
+                            <div className="motionDelegate">
+                                <p className='grey-text'>No Delegate Chosen</p>
+                            </div>
+                        </a>
+                        <div className="dropdown-menu">
+                                {presentDels}
+                        </div>
+                    </div>,
+                    getMotionInput()] 
+                    : <p onClick={switchExpand}>{props.motion}</p>}
             </div>
 }
 
@@ -247,13 +270,16 @@ function UnmodDiv(props) {
 }
 
 function ModDiv(props) {
-    return  [<p className='motion-text mod-topic'>
+    return  [<p className='motion-text mod-topic' key="topic">
                 <span>{props.motion.topic}</span>
             </p>
-            ,<p className="motion-text">
+            ,<p className="motion-text" key="modifications">
                 <span>{stringify(props.motion.min)}</span> Min 
                 <span>{stringify(props.motion.sec)}</span> Sec 
                 <span>{stringify(props.motion.speakingTime)}</span> Speaking Time
+            </p>,
+            <p className="motion-text" key="speakers">
+                <span>({stringify(props.motion.numSpeakers)}</span> Speakers<span className="speaker-paren">)</span>
             </p>]
 }
 
