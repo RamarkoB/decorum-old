@@ -13,9 +13,9 @@ const Motions = {
 }
 
 class Motion {
-    constructor(type, rank) {
+    constructor(delegate, type, rank) {
         this.hasDel = false;
-        this.delegate = null;
+        this.delegate = delegate;
         this.type = type;
         this.rank = rank;
         this.status = Vote.NA;
@@ -33,56 +33,40 @@ class Motion {
         this.status = Vote.NA;
     }
 
-    addDelegate(del) {
-        this.delegate = del;
-        this.hasDel = true;
-    }
-
-    removeDelegate() {
-        if (this.hasDel) {
-            this.delegate = null;
-            this.hasDel = false;
-        }
-    }
-
-    hasDelegate(){
-        return this.hasDel;
-    }
-
     getDelegate(){
         return this.delegate;
     }
 }
 
 class Extend extends Motion {
-    constructor() {
-        super(Motions.Extend, 0);
+    constructor(delegate) {
+        super(delegate, Motions.Extend, 0);
     }
 }
 
 class IntroduceVoting extends Motion {
-    constructor() {
-        super(Motions.IntroduceVoting, 1)
+    constructor(delegate) {
+        super(delegate, Motions.IntroduceVoting, 1)
     }
 }
 
 class Voting extends Motion {
-    constructor(speakers, speakingTime) {
-        super(Motions.Voting, 2);
-        this.speakers = speakers;
+    constructor(delegate, numSpeakers, speakingTime) {
+        super(delegate, Motions.Voting, 2);
+        this.numSpeakers = numSpeakers;
         this.speakingTime = speakingTime;
     }
 }
 
 class Introduce extends Motion {
-    constructor() {
-        super(Motions.Introduce, 3);
+    constructor(delegate) {
+        super(delegate, Motions.Introduce, 3);
     }
 }
 
 class Unmod extends Motion {
-    constructor(min, sec) {
-        super(Motions.Unmod, 4);
+    constructor(delegate, min, sec) {
+        super(delegate, Motions.Unmod, 4);
         this.min = min;
         this.sec = sec;
         this.overallTime = min * 60 + sec;
@@ -90,21 +74,21 @@ class Unmod extends Motion {
 }
 
 class StrawPoll extends Motion {
-    constructor() {
-        super(Motions.StrawPoll, 5)
+    constructor(delegate) {
+        super(delegate, Motions.StrawPoll, 5)
     }
 }
 
 class RoundRobin extends Motion {
-    constructor(speakingTime) {
-        super(Motions.RoundRobin, 6);
+    constructor(delegate, speakingTime) {
+        super(delegate, Motions.RoundRobin, 6);
         this.speakingTime = speakingTime;
     }
 }
 
 class Mod extends Motion {
-    constructor(topic, min, sec, speakingTime) {
-        super(Motions.Mod, 7);
+    constructor(delegate, topic, min, sec, speakingTime) {
+        super(delegate, Motions.Mod, 7);
         this.topic = topic;
         this.min = min;
         this.sec = sec;

@@ -1,4 +1,4 @@
-import state from '../state/state';
+import { state } from "./../state/state"
 import { MakeMotionDiv, MotionDiv, DirectiveDiv, stringify } from './motiondivs';
 import { Attendence, Status, Vote } from './../state/structs';
 import { Motions } from '../state/motions';
@@ -22,17 +22,17 @@ function DelegateDiv(props) {
 }
 
 function SpeakerDiv(props) {
-  function changeDel(del){
-      const index = state.getDelegates().indexOf(del);
-      
-      state.removeSpeaker(props.index);
-      state.addSpeaker(props.index, index);
-  }
+    const [search, setSearch] = useState("");
+    const present = state.filterPresent(search);
 
+    function changeDel(del){
+        const index = state.getDelegates().indexOf(del);
+        
+        state.removeSpeaker(props.index);
+        state.addSpeaker(props.index, index);
+    }
 
-  const [search, setSearch] = useState("");
-  const present = state.filterPresent(search);
-  const presentDels = (state.getPresent().length > 0) ?
+    const presentDels = (state.getPresent().length > 0) ?
     [<input placeholder='Search...' onChange={(e) => setSearch(e.target.value)}></input>,
     present.length > 0 ? 
         present.map(del => 
@@ -55,50 +55,57 @@ function SpeakerDiv(props) {
           </div>
 }
 
+function DirSpeakerDiv(props) {
+    return  <div className={props.status === Vote.Failed? "card mini pink" : "card mini"}>
+                <p>{props.dir.getName()}</p>
+            </div>
+}
+
 function TimerDiv() {
-  function write(){
-      state.writeTimer();
-  }
+    const placeholderMin = stringify(state.getLength().min);
+    const placeholderSec = stringify(state.getLength().sec);
+    const timerMin = stringify(state.getTime().minutes);
+    const timerSec = stringify(state.getTime().seconds);
 
-  function statusCheck(){
-      if (state.getTimerStatus() === Status.Inactive){
-      return "Start";
-      } else if (state.getTimerStatus() === Status.Active){
-      return "Pause";
-      } else {
-      return "Play";
-      }
-  }
-
-  function reset() {
-      state.resetTimer();
-  }
-
-  function buttonCheck(){
-      if (state.getTimerStatus() === Status.Inactive) {
-      const minutesString = document.getElementById("timer-min").value;
-      const secondsString = document.getElementById("timer-sec").value;
-
-      const minutes = (minutesString === "") ? 0 : parseInt(minutesString);
-      const seconds = (secondsString === "") ? 0 : parseInt(secondsString);
-
-      state.setTimer(minutes, seconds);
-      state.playTimer();
-      } else if (state.getTimerStatus() === Status.Active) {
-      state.pauseTimer();
-      } else {
-      state.playTimer();
-      }
-
-  }
-
-  const placeholderMin = stringify(state.getLength().min);
-  const placeholderSec = stringify(state.getLength().sec);
-  const timerMin = stringify(state.getTime().minutes);
-  const timerSec = stringify(state.getTime().seconds);
+    let timerNums;
 
 
-  let timerNums;
+    function write(){
+        state.writeTimer();
+    }
+
+    function statusCheck(){
+        if (state.getTimerStatus() === Status.Inactive){
+        return "Start";
+        } else if (state.getTimerStatus() === Status.Active){
+        return "Pause";
+        } else {
+        return "Play";
+        }
+    }
+
+    function reset() {
+        state.resetTimer();
+    }
+
+    function buttonCheck(){
+        if (state.getTimerStatus() === Status.Inactive) {
+        const minutesString = document.getElementById("timer-min").value;
+        const secondsString = document.getElementById("timer-sec").value;
+
+        const minutes = (minutesString === "") ? 0 : parseInt(minutesString);
+        const seconds = (secondsString === "") ? 0 : parseInt(secondsString);
+
+        state.setTimer(minutes, seconds);
+        state.playTimer();
+        } else if (state.getTimerStatus() === Status.Active) {
+        state.pauseTimer();
+        } else {
+        state.playTimer();
+        }
+
+    }
+
   if (state.getTimerStatus() === Status.Inactive){
       timerNums = <p className="timer-inactive">
       <input id={"timer-min"} placeholder={placeholderMin} maxLength="2" pattern="\d*"></input> Min 
@@ -134,16 +141,16 @@ function TimerDiv() {
 
 //Page Components
 function DelegatePage() {
+    const numPresent = state.numPresent();
+
     const delegates = state.getDelegates().map((del, index) =>
         <DelegateDiv attendence={del.attendence} name={del.name} index={index} key={index}/>
     );
-    const numPresent = state.numPresent();
-
-    var sigCount =  <div id='sigcount' className='notready card inactive'>
-                        <p>A Directive Requires</p>
-                        <h1>{state.signum}</h1>
-                        <p>Signatories</p>
-                    </div>
+    const sigCount =    <div id='sigcount' className='notready card inactive'>
+                            <p>A Directive Requires</p>
+                            <h1>{state.signum}</h1>
+                            <p>Signatories</p>
+                        </div>
 
 
     return [<div id="delList" className="left side col-8" key="delList">{delegates}</div>, 
@@ -175,23 +182,26 @@ function UnmodPage() {
   return <div id="unmodMain">
             <TimerDiv />
         </div>
-  
 }
 
 function SpeakersPage() {
-  function lastSpeaker() {
-    state.lastSpeaker();
-  }
+    function lastSpeaker() {
+        state.lastSpeaker();
+    }
 
-  function nextSpeaker() {
-    state.nextSpeaker();
-  }
+    function nextSpeaker() {
+        state.nextSpeaker();
+    }
 
-  const speakers = state.getSpeakers().map((speaker, index) =>
-  <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
-);
+    const speakers = state.getSpeakers().map((speaker, index) =>
+    <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
+    );
 
-  const speakerChange = <ul className="list-inline">
+    const speakerNum = state.speakers?
+    <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>:
+    <h1> No Speakers List</h1>;
+
+    const speakerChange = <ul className="list-inline">
                             <li className="list-inline-item">
                                 <button type="button" className="btn btn-demo" onClick={lastSpeaker}>Last Speaker</button>
                             </li>
@@ -200,11 +210,9 @@ function SpeakersPage() {
                             </li>
                         </ul>
 
-  const speakerNum = state.speakers?
-    <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>:
-    <h1> No Speakers List</h1>;
 
-  return    [<div id="speakersList" className="left side col-4" key="speakersList">
+
+    return  [<div id="speakersList" className="left side col-4" key="speakersList">
                 {speakers}
             </div>,
             <div id="modMain" className="side col-8" key="modMain">
@@ -214,10 +222,48 @@ function SpeakersPage() {
             </div>]
 }
 
+function VotingPage() {
+    // function lastSpeaker() {
+    //     state.lastSpeaker();
+    //   }
+    
+    //   function nextSpeaker() {
+    //     state.nextSpeaker();
+    //   }
+    
+    //   const speakers = state.getSpeakers().map((speaker, index) =>
+    //   <DirSpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
+    // );
+    
+    //   const speakerChange = <ul className="list-inline">
+    //                             <li className="list-inline-item">
+    //                                 <button type="button" className="btn btn-demo" onClick={lastSpeaker}>Last Speaker</button>
+    //                             </li>
+    //                             <li className="list-inline-item">
+    //                                 <button type="button" className="btn btn-demo" onClick={nextSpeaker}>Next Speaker</button>
+    //                             </li>
+    //                         </ul>
+    
+    //   const speakerNum = state.speakers ?
+    //     <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>:
+    //     <h1> No Speakers List</h1>;
+
+    const directives = state.getDirectives().map((dir, index) =>
+                    <DirSpeakerDiv dir={dir} status={dir.status} num={state.currentMotion.numSpeakers} key={index}/>
+                );
+    
+    return  [<div id="dirSpeakersList" className="left side col-4" key="speakersList">
+                {directives}
+            </div>,
+            <div id="dirSpeakersMain" className="side col-8" key="modMain">
+                <TimerDiv />
+            </div>]
+}
+
 function DirectivesPage() {
-    const directives = state.directives.map((directive, index) =>
-        <DirectiveDiv status={directive.status} index={index} key={index}/>
-    )
+    const directives = state.getDirectives().map((dir, index) =>
+        <DirectiveDiv dir={dir} status={dir.status} index={index} key={index}/>
+    );
 
     function pastDirectives() {
         console.log(
@@ -273,4 +319,4 @@ function MotionsPage() {
           <div id="motionsMain" className="side col-8" key="motionsMain">{motions}</div>]
 }
 
-export {DelegatePage, UnmodPage, SpeakersPage, DirectivesPage, MotionsPage};
+export {DelegatePage, UnmodPage, SpeakersPage, DirectivesPage, MotionsPage, VotingPage};

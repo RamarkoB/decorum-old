@@ -245,15 +245,7 @@ class Timer {
     }
 }
 
-//Page
-const Page = {
-    delegates: "delegates",
-    motions: "motions",
-    directives: "directives",
-    speakers: "speakers",
-    unmod: "unmod",
-}
-
+//Directive Classes
 class Directive {
     constructor() {
         this.name = null;
@@ -271,6 +263,26 @@ class Directive {
     reset() {
         this.status = Vote.NA;
     }
+
+    getName() {
+        return this.name;
+    }
 }
 
-export {Attendence, Vote, Delegate, Speaker, SpeakersList, Status, Timer, Page, Directive};
+const DirOrder = {
+    introduced: "Introduced",
+    revIntroduced: "Reverse Introduced",
+    alphabetical: "Alphabetical",
+    revAlphabetical: "Reverse Alphabetical"
+}
+
+//Page
+const Page = {
+    delegates: "delegates",
+    motions: "motions",
+    directives: "directives",
+    speakers: "speakers",
+    unmod: "unmod",
+}
+
+export {Attendence, Vote, Delegate, Speaker, SpeakersList, Status, Timer, Page, Directive, DirOrder};

@@ -42,7 +42,7 @@ body {
 }
 
 section {
-    min-height: 81%;
+    min-height: calc(100% - 154px);
     padding: 0px 12px;
 }
 
@@ -322,6 +322,10 @@ input:invalid {
 .motion-text span {
     font-size: x-large;
     margin-left: 10px;
+}
+
+.propose-text {
+    margin-bottom: 0;
 }
 
 .mod-topic {

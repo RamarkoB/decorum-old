@@ -1,4 +1,4 @@
-import {Attendence, Delegate, SpeakersList, Status, Timer, Page, Directive} from "./structs";
+import {Attendence, Delegate, SpeakersList, Status, Timer, Page, Directive, DirOrder} from "./structs";
 import { Motions } from "./motions";
 
 //State
@@ -140,9 +140,9 @@ class State {
             switch (this.currentMotion.type) {
                 case Motions.Voting:
                     if (num % 2 === 0 ) {
-                        return "For Speaker " + ((num % 2) + 1);
+                        return "For Speaker " + (Math.round(num / 2) + 1);
                     } else {
-                        return "Against Speaker " + ((num % 2) + 1);
+                        return "Against Speaker " + (Math.round(num / 2));
                     }
                 case Motions.Mod:
                     return "Speaker " + (num + 1);
@@ -351,6 +351,7 @@ class State {
                 break;
         }
 
+        console.log(this.currentMotion);
         this.clearMotions();
     }
 
@@ -383,6 +384,29 @@ class State {
     //Directive Methods
     addDirective() {
         this.directives.push(new Directive());
+    }
+
+    getDirectives(order = DirOrder.introduced) {
+        switch (order) {
+            case DirOrder.introduced:
+                return this.directives;
+            case DirOrder.revIntroduced:
+                return this.directives.reverse();
+            case DirOrder.alphabetical:
+                return this.directives.sort((a,b) => {
+                    if (a.name > b.name) { return 1; }
+                    else if (a.name < b.name) { return -1;}
+                    else {return 0;}
+                });
+            case DirOrder.revAlphabetical:
+                return this.directives.sort((a,b) => {
+                    if (a.name > b.name) { return 1; }
+                    else if (a.name < b.name) { return -1;}
+                    else {return 0;}
+                }).reverse();
+
+            //no default
+        }
     }
 
     passDirective(index){
@@ -445,6 +469,7 @@ function genDelegates(num){
     return names;
 }
 
+// let state;
 // const delNames = ['Alex Obtre Lumumba',
 //         'Amb. Ernest Niyokindi',
 //         'Amb. Francois Nkulikiyimfura',
@@ -469,6 +494,6 @@ function genDelegates(num){
 //         'Rt. Hon Martin Ngoga',
 //         'Vivienne Yeda Apopo',
 //         'Yufnalis N. Okubo'];
-const state = new State(genDelegates(200));
+const state = new State(genDelegates(20));
 
-export default state;
+export {State, state, genDelegates };
