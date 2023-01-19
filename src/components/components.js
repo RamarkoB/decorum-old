@@ -33,22 +33,22 @@ function SpeakerDiv(props) {
     }
 
     const presentDels = (state.getPresent().length > 0) ?
-    [<input placeholder='Search...' onChange={(e) => setSearch(e.target.value)}></input>,
+    [<input placeholder='Search...' onChange={(e) => setSearch(e.target.value)} key="search" ></input>,
     present.length > 0 ? 
         present.map(del => 
-            <a className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
+            <button className="dropdown-item text-center text-uppercase" onClick={() => changeDel(del)} key={del.getName()}>
                 {del.getName()} {del.getTimesSpoken()}
-            </a>):
-        <a className="dropdown-item text-center text-uppercase"> No Delegates Found </a>]:
-    <a className="dropdown-item text-center text-uppercase"> No Delegates Present </a>;
+            </button>):
+        <button className="dropdown-item text-center text-uppercase"> No Delegates Found </button>]:
+    <button className="dropdown-item text-center text-uppercase"> No Delegates Present </button>;
     
 
   return  <div className="dropdown">
-              <a href="#" data-bs-toggle="dropdown">
+              <button data-bs-toggle="dropdown">
                   <div className={props.spoken === "yes"? "card mini speaker pink" : "card mini speaker"}>
                       <p>{props.name}</p>
                   </div>
-              </a>
+              </button>
               <div className="dropdown-menu">
                     {presentDels}
               </div>
@@ -56,8 +56,18 @@ function SpeakerDiv(props) {
 }
 
 function DirSpeakerDiv(props) {
+
     return  <div className={props.status === Vote.Failed? "card mini pink" : "card mini"}>
                 <p>{props.dir.getName()}</p>
+                <div className={"card mini speaker"}>
+                      <p>Hello</p>
+                </div>
+                <div className={"card mini speaker"}>
+                      <p>Hello</p>
+                </div>
+                <div className={"card mini speaker"}>
+                      <p>Hello</p>
+                </div>
             </div>
 }
 
@@ -309,9 +319,22 @@ function DirectivesPage() {
 }
 
 function MotionsPage() {
-  const motionTypes = Object.values(Motions).map((motion) =>
-      <MakeMotionDiv motion={motion} key={motion}/>
-  );
+
+  const motionTypes = Object.values(Motions).map((motion) => {
+    if (state.currentMotion === null) {
+        if (motion !== Motions.Extend) {
+            return <MakeMotionDiv motion={motion} key={motion}/>
+        }
+    } else if ((state.currentMotion.type === Motions.Mod) || (state.currentMotion.type === Motions.Unmod)) {
+        return <MakeMotionDiv motion={motion} key={motion}/>
+    } else {
+        if (motion !== Motions.Extend) {
+            return <MakeMotionDiv motion={motion} key={motion}/>
+        }       
+    }
+    return [];
+  });
+  
   const motions = state.getMotions()
                 .map((motion, index) => <MotionDiv motion={motion} index={index} key={index}/> );
 

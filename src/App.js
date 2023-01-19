@@ -39,15 +39,15 @@ function Footer() {
   }
   
   const motionsDropdown = state.getOtherPages()
-      .map(page =>  <a className="dropdown-item text-center text-uppercase" onClick={() => state.toPage(page)} key={page}>{page}</a>)
+      .map(page =>  <button className="dropdown-item text-center text-uppercase" onClick={() => state.toPage(page)} key={page}>{page}</button>)
 
   return  <div id="footerDiv" className="dropdown">
-              <a data-bs-toggle="dropdown">
+              <button data-bs-toggle="dropdown">
                 <h1 className="header-txt fw-bold text-uppercase">
                     {parse()}
                     <i className="bi bi-chevron-up"></i>
                 </h1>
-            </a>
+            </button>
               <div className="dropdown-menu">
                   {motionsDropdown}
               </div>

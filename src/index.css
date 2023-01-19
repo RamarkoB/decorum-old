@@ -363,3 +363,30 @@ input:invalid {
 #directivesList button {
     margin-bottom: 10px;
 }
+
+#dirSpeakersList > .card {
+    padding: 5px;
+}
+
+#dirSpeakersList > .card > p {
+    font-size: larger;
+    font-weight: bold;
+}
+
+#dirSpeakersList > .card > .card {
+    margin: 0;
+}
+#dirSpeakersList > .card > .card:not(:first-of-type) {
+    margin-top: 5px;
+}
+
+button {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+button > card {
+    width:100%;
+}

@@ -229,17 +229,17 @@ function MakeMotionDiv(props) {
       [<input placeholder='Search...' onChange={(e) => setSearch(e.target.value)} key="getDel"/>,
       present.length > 0 ? 
           present.map(del => 
-              <a className="dropdown-item text-center text-uppercase" onClick={() => setDel(del.getName())} key={del.getName()}>
+              <button className="dropdown-item text-center text-uppercase" onClick={() => setDel(del.getName())} key={del.getName()}>
                   {del.getName()} {del.getTimesSpoken()}
-              </a>):
-          <a className="dropdown-item text-center text-uppercase"> No Delegates Found </a>]:
-      <a className="dropdown-item text-center text-uppercase"> No Delegates Present </a>;
+              </button>):
+          <button className="dropdown-item text-center text-uppercase"> No Delegates Found </button>]:
+      <button className="dropdown-item text-center text-uppercase"> No Delegates Present </button>;
 
     return  <div className="card mini motion" >
                 {expanded? 
                     [<p key="Motion Name" onClick={switchExpand}>{props.motion}</p>,
                     <div key="dropdown" className="dropdown">
-                        <a href="#" data-bs-toggle="dropdown">
+                        <button data-bs-toggle="dropdown">
                             <div className="motionDelegate">
                                 { delegate ?
                                     <p>{delegate}</p>:
@@ -247,7 +247,7 @@ function MakeMotionDiv(props) {
                                 }
                                 
                             </div>
-                        </a>
+                        </button>
                         <div className="dropdown-menu">
                                 {presentDels}
                         </div>
