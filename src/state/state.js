@@ -137,20 +137,7 @@ class State {
 
     getSpeaker(num){
         if (this.getSpeakersList().listSpeakers[num].getDelegate() === null) {
-            switch (this.currentMotion.type) {
-                case Motions.Voting:
-                    if (num % 2 === 0 ) {
-                        return "For Speaker " + (Math.round(num / 2) + 1);
-                    } else {
-                        return "Against Speaker " + (Math.round(num / 2));
-                    }
-                case Motions.Mod:
-                    return "Speaker " + (num + 1);
-                case Motions.RoundRobin:
-                    return "Speaker " + (num + 1);
-                default:
-                    break;
-            }
+            return "Speaker " + (num + 1);
         } else {
             return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
         }
@@ -264,6 +251,25 @@ class State {
         this.motions.push(motion);
     }
 
+    getMotionTypes() {
+        const motionTypes = Object.values(Motions).filter((motion) => {
+            if (!(state.currentMotion)) {
+                switch (motion) {
+                    case (Motions.ExtendUnmod): return false
+                    case (Motions.ExtendMod): return false
+                    default: return true
+                }
+            } else if (!(state.currentMotion.type === Motions.Unmod) && motion === Motions.ExtendUnmod) {
+                return false;
+            } else if (!(state.currentMotion.type === Motions.Mod) && motion === Motions.ExtendMod) {
+                return false;
+            } else {
+                return true;
+            }
+        })
+        return motionTypes;
+    }
+
     getMotions(){
         const motions = this.motions.sort((a,b) => {
             if (a.rank > b.rank) {
@@ -331,8 +337,13 @@ class State {
         this.currentMotion = motion;
 
         switch (motion.type) {
+            case Motions.ExtendUnmod:
+                this.genUnmod(motion.min, motion.sec);
+                break;
+            case Motions.ExtendMod:
+                this.genMod(motion.numSpeakers, motion.speakingTime);
+                break;
             case Motions.Voting:
-                this.genMod(motion.speakers * 2, motion.speakingTime);
                 this.toPage(Page.directives);
                 break;
             case Motions.Introduce:

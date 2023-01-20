@@ -2,7 +2,8 @@ import { Vote } from "./structs";
 
 //Motions
 const Motions = {
-    Extend: "Extend Current Motion",
+    ExtendMod: "Extend Current Mod",
+    ExtendUnmod: "Extend Current Unmod",
     IntroduceVoting: "Introduce Directives and Enter Voting Procedure",
     Voting: "Enter Voting Procedure",
     Introduce: "Introduce Directives",
@@ -38,9 +39,32 @@ class Motion {
     }
 }
 
-class Extend extends Motion {
-    constructor(delegate) {
-        super(delegate, Motions.Extend, 0);
+class ExtendMod extends Motion {
+    constructor(delegate, topic, min, sec, speakingTime) {
+        super(delegate, Motions.ExtendMod, 0);
+        this.topic = topic;
+        this.min = min;
+        this.sec = sec;
+        this.overallTime = min * 60 + sec;
+        this.speakingTime = speakingTime;
+        this.numSpeakers = this.calcSpeakers();
+    }
+
+    calcSpeakers() {
+        if (this.overallTime % this.speakingTime !== 0) {
+            return NaN;
+        } else {
+            return (this.overallTime / this.speakingTime)
+        }
+    }
+}
+
+class ExtendUnmod extends Motion {
+    constructor(delegate, min, sec) {
+        super(delegate, Motions.ExtendUnmod, 0);
+        this.min = min;
+        this.sec = sec;
+        this.overallTime = min * 60 + sec;
     }
 }
 
@@ -106,4 +130,4 @@ class Mod extends Motion {
     }
 }
 
-export {Motions, Vote, Extend, Voting, Introduce, IntroduceVoting, Unmod, StrawPoll, RoundRobin, Mod};
+export {Motions, Vote, ExtendMod, ExtendUnmod, Voting, Introduce, IntroduceVoting, Unmod, StrawPoll, RoundRobin, Mod};

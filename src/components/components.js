@@ -56,7 +56,6 @@ function SpeakerDiv(props) {
 }
 
 function DirSpeakerDiv(props) {
-
     return  <div className={props.status === Vote.Failed? "card mini pink" : "card mini"}>
                 <p>{props.dir.getName()}</p>
                 <div className={"card mini speaker"}>
@@ -152,7 +151,6 @@ function TimerDiv() {
 //Page Components
 function DelegatePage() {
     const numPresent = state.numPresent();
-
     const delegates = state.getDelegates().map((del, index) =>
         <DelegateDiv attendence={del.attendence} name={del.name} index={index} key={index}/>
     );
@@ -195,14 +193,6 @@ function UnmodPage() {
 }
 
 function SpeakersPage() {
-    function lastSpeaker() {
-        state.lastSpeaker();
-    }
-
-    function nextSpeaker() {
-        state.nextSpeaker();
-    }
-
     const speakers = state.getSpeakers().map((speaker, index) =>
     <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
     );
@@ -220,7 +210,13 @@ function SpeakersPage() {
                             </li>
                         </ul>
 
+    function lastSpeaker() {
+        state.lastSpeaker();
+    }
 
+    function nextSpeaker() {
+        state.nextSpeaker();
+    }
 
     return  [<div id="speakersList" className="left side col-4" key="speakersList">
                 {speakers}
@@ -260,7 +256,7 @@ function VotingPage() {
 
     const directives = state.getDirectives().map((dir, index) =>
                     <DirSpeakerDiv dir={dir} status={dir.status} num={state.currentMotion.numSpeakers} key={index}/>
-                );
+    );
     
     return  [<div id="dirSpeakersList" className="left side col-4" key="speakersList">
                 {directives}
@@ -319,8 +315,7 @@ function DirectivesPage() {
 }
 
 function MotionsPage() {
-
-  const motionTypes = Object.values(Motions).map((motion) => {
+  const motionTypes = state.getMotionTypes().map((motion) => {
     if (state.currentMotion === null) {
         if (motion !== Motions.Extend) {
             return <MakeMotionDiv motion={motion} key={motion}/>

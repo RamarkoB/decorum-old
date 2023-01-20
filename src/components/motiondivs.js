@@ -1,6 +1,6 @@
 //Imports
 import React, { useState } from 'react';
-import { Motions, Extend, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod } from '../state/motions';
+import { Motions, ExtendMod, ExtendUnmod, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod } from '../state/motions';
 import { Vote } from "../state/structs"
 import { state } from "./../state/state"
 
@@ -50,17 +50,57 @@ function VoteModule(props) {
 
 
 //Input Divs
-// function ExtendInputDiv() {
-//     if (!state.currentMotion) {
-//         return [];
-//     }
+function MakeExtendModDiv(props) {
+    const [min, setMin] = useState("");
+    const [sec, setSec] = useState("");
 
-//     switch (state.currentMotion.type) {
-//         case Motions.Mod: return <MakeModDiv />;
-//         case Motions.Unmod: return <MakeUnmodDiv />;
-//         default: return [];
-//     }
-// }
+    function addMotion() {
+        if (isNaN(Number(min)) || isNaN(Number(sec))) {
+            console.log("we got a not a number ovah here!");
+        } else {
+            state.addMotion(new ExtendMod(props.delegate, state.currentMotion.topic, Number(min), Number(sec), state.currentMotion.speakingTime));
+            props.setDel(null);
+            setMin("");
+            setSec("");
+        }
+    }
+
+    return  [<div className="motion-inputs" key="modInput">
+                <p className="motion-input">
+                    <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setMin(e.target.value)} value={min}/> Min 
+                    <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSec(e.target.value)} value={sec}/> Sec 
+                </p>
+            </div>, 
+            <button className='btn add-motion' onClick={addMotion} key="modButton">
+                    Add Motion
+            </button>]
+}
+
+function MakeExtendUnmodDiv(props) {
+    const [min, setMin] = useState("");
+    const [sec, setSec] = useState("");
+
+    function addMotion() {
+        if (isNaN(Number(min)) || isNaN(Number(sec))) {
+            console.log("we got a not a number ovah here!");
+        } else {
+            state.addMotion(new ExtendUnmod(props.delegate, Number(min), Number(sec)));
+            props.setDel(null);
+            setMin("");
+            setSec("");
+        }
+    }
+
+    return  [<div className="motion-inputs" key="unmodInput">
+                <p className="motion-input">
+                    <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setMin(e.target.value)} value={min}/> Min 
+                    <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSec(e.target.value)} value={sec}/> Sec 
+                </p>
+            </div>, 
+            <button className='btn add-motion' onClick={addMotion} key="UnmodButton">
+                    Add Motion
+            </button>]
+}
 
 function MakeVotingDiv(props) {
     const [min, setMin] = useState("");
@@ -88,7 +128,7 @@ function MakeVotingDiv(props) {
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSpeakers(e.target.value)} value={speakers}/> Speakers For/Against 
                 </p>
             </div>,
-            <button className='btn' onClick={addMotion} key="votingButton">
+            <button className='btn add-motion' onClick={addMotion} key="votingButton">
                     Add Motion
             </button>]
 }
@@ -114,7 +154,7 @@ function MakeUnmodDiv(props) {
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSec(e.target.value)} value={sec}/> Sec 
                 </p>
             </div>, 
-            <button className='btn' onClick={addMotion} key="UnmodButton">
+            <button className='btn add-motion' onClick={addMotion} key="UnmodButton">
                     Add Motion
             </button>]
 }
@@ -137,7 +177,7 @@ function MakeRoundRobinDiv(props) {
                     <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSpeakingTime(e.target.value)} value={speakingTime}/> Speaking Time 
                 </p>
             </div>,
-            <button className='btn' onClick={addMotion} key="roundRobinButton">
+            <button className='btn add-motion' onClick={addMotion} key="roundRobinButton">
                 Add Motion
             </button>]
 }
@@ -172,7 +212,7 @@ function MakeModDiv(props) {
                 <p className="motion-input">
                 <input placeholder="00" maxLength="2" pattern="\d*" onChange={(e) => setSpeakingTime(e.target.value)} value={speakingTime}/> Speaking Time </p>
             </div>, 
-            <button className='btn' onClick={addMotion} key="modButton">
+            <button className='btn add-motion' onClick={addMotion} key="modButton">
                     Add Motion
             </button>]
 }
@@ -185,13 +225,14 @@ function MakeMotionDiv(props) {
 
     function getMotionInput() {
         switch (props.motion) {
-            // case Motions.Extend:        return <ExtendInputDiv setMods={setMods} />;
+            case Motions.ExtendMod:     return <MakeExtendModDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
+            case Motions.ExtendUnmod:   return <MakeExtendUnmodDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
             case Motions.Voting:        return <MakeVotingDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
             case Motions.Unmod:         return <MakeUnmodDiv delegate={delegate} setDel={setDel} key="unmodInputs"/>;
             case Motions.Mod:           return <MakeModDiv delegate={delegate} setDel={setDel} key="modInputs"/>;
             case Motions.RoundRobin:    return <MakeRoundRobinDiv delegate={delegate} setDel={setDel} key="roundRobinInputs"/>;
             default:                    
-                return  <button className='btn' onClick={addMotion} key="button">
+                return  <button className='btn add-motion' onClick={addMotion} key="button">
                             Add Motion
                         </button>;
         }
@@ -199,9 +240,6 @@ function MakeMotionDiv(props) {
 
     function addMotion() {
         switch (props.motion) {
-            case Motions.Extend:
-                state.addMotion(new Extend(delegate));
-                break;
             case Motions.Introduce:
                 state.addMotion(new Introduce(delegate));
                 break;
@@ -230,7 +268,7 @@ function MakeMotionDiv(props) {
       present.length > 0 ? 
           present.map(del => 
               <button className="dropdown-item text-center text-uppercase" onClick={() => setDel(del.getName())} key={del.getName()}>
-                  {del.getName()} {del.getTimesSpoken()}
+                  {del.getName()}
               </button>):
           <button className="dropdown-item text-center text-uppercase"> No Delegates Found </button>]:
       <button className="dropdown-item text-center text-uppercase"> No Delegates Present </button>;
@@ -258,12 +296,18 @@ function MakeMotionDiv(props) {
 }
 
 //Motion Divs
-function ExtendDiv() {
-    switch (state.currentMotion) {
-        case Motions.Mod: return <ModDiv />;
-        case Motions.Unmod: return <UnmodDiv />;
-        default: return [];
-    }
+function ExtendModDiv(props) {
+    return  <p className="motion-text">
+                <span>{stringify(props.motion.min)}</span> Min 
+                <span>{stringify(props.motion.sec)}</span> Sec 
+            </p>     
+}
+
+function ExtendUnmodDiv(props) {
+    return  <p className="motion-text">
+                <span>{stringify(props.motion.min)}</span> Min 
+                <span>{stringify(props.motion.sec)}</span> Sec 
+            </p>     
 }
 
 function VotingDiv(props) {
@@ -277,8 +321,7 @@ function UnmodDiv(props) {
     return  <p className="motion-text">
                 <span>{stringify(props.motion.min)}</span> Min 
                 <span>{stringify(props.motion.sec)}</span> Sec 
-            </p>
-            
+            </p>         
 }
 
 function ModDiv(props) {
@@ -319,7 +362,8 @@ function MotionDiv(props) {
 
     function getMotion() {
         switch (props.motion.type) {
-            case Motions.Extend:        return <ExtendDiv motion={props.motion} />
+            case Motions.ExtendMod:     return <ExtendModDiv motion={props.motion} />
+            case Motions.ExtendUnmod:   return <ExtendUnmodDiv motion={props.motion} />
             case Motions.Voting:        return <VotingDiv motion={props.motion} />
             case Motions.Unmod:         return <UnmodDiv motion={props.motion} />
             case Motions.Mod:           return <ModDiv motion={props.motion} />

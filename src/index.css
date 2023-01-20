@@ -117,7 +117,7 @@ h3 {
 .card {
     background: inherit;
     border: 2px solid black;
-    margin: 0px 0px 10px 0px;
+    margin-bottom: 10px;
 }
 
 .card.mini p:not(.motion-input) {
@@ -268,7 +268,7 @@ input:invalid {
 
 
 /* Motions CSS */
-.motion button {
+.add-motion {
     width: 100%;
     padding: 0.5rem 2rem !important;
     border-radius: 0!important;
@@ -281,7 +281,7 @@ input:invalid {
     font-size: 14px; 
 }
 
-.motion button:hover {
+.add-motion:hover {
     border-top:  black solid 2px;
 }
 
@@ -336,6 +336,10 @@ input:invalid {
     margin-left: 0!important;
 }
 
+.speaker {
+    margin: 0;
+}
+
 #makemod-topic {
     width: 100%;
     text-align: center;
@@ -384,9 +388,9 @@ button {
     width: 100%;
     background: transparent;
     border: none;
-    padding: 0;
+    padding: 0;   
 }
 
-button > card {
-    width:100%;
+#speakersList > .dropdown {
+    margin-bottom: 10px;
 }
