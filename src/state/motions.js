@@ -75,8 +75,9 @@ class IntroduceVoting extends Motion {
 }
 
 class Voting extends Motion {
-    constructor(delegate, numSpeakers, speakingTime) {
+    constructor(delegate, order, numSpeakers, speakingTime) {
         super(delegate, Motions.Voting, 2);
+        this.order = order;
         this.numSpeakers = numSpeakers;
         this.speakingTime = speakingTime;
     }
@@ -130,4 +131,4 @@ class Mod extends Motion {
     }
 }
 
-export {Motions, Vote, ExtendMod, ExtendUnmod, Voting, Introduce, IntroduceVoting, Unmod, StrawPoll, RoundRobin, Mod};
+export {Motions, ExtendMod, ExtendUnmod, Voting, Introduce, IntroduceVoting, Unmod, StrawPoll, RoundRobin, Mod};

@@ -1,4 +1,5 @@
-import {Attendence, Delegate, SpeakersList, Status, Timer, Page, Directive, DirOrder} from "./structs";
+import { Attendence, Delegate, SpeakersList, Status, Timer, Page} from "./structs";
+import { Directive, DirOrder} from "./directives";
 import { Motions } from "./motions";
 
 //State
@@ -251,6 +252,14 @@ class State {
         this.motions.push(motion);
     }
 
+    getCurrentMotionType(){
+        if (this.currentMotion) {
+            return this.currentMotion.type;
+        } else {
+            return null;
+        }
+    }
+
     getMotionTypes() {
         const motionTypes = Object.values(Motions).filter((motion) => {
             if (!(state.currentMotion)) {
@@ -345,6 +354,7 @@ class State {
                 break;
             case Motions.Voting:
                 this.toPage(Page.directives);
+                this.makeDirSpeakersList(motion.numSpeakers);
                 break;
             case Motions.Introduce:
                 this.toPage(Page.directives);
@@ -393,8 +403,12 @@ class State {
     }
 
     //Directive Methods
-    addDirective() {
-        this.directives.push(new Directive());
+    addDirective(name) {
+        const dir = name?
+            new Directive(name):
+            new Directive();
+
+        this.directives.push(dir);
     }
 
     getDirectives(order = DirOrder.introduced) {
@@ -420,6 +434,17 @@ class State {
         }
     }
 
+    makeDirSpeakersList(num){
+       this.speakers = {};
+       this.getDirectives(this.order)
+            .forEach(((dir) => {this.speakers[dir] = new SpeakersList(num)}));
+       console.log(this.speakers); 
+    }
+
+    getDirSpeakers(dir) {
+        return this.speakers[dir];
+    }
+
     passDirective(index){
         switch (this.pastdirectives.indexOf(this.directives[index])) {
             case -1:
@@ -427,9 +452,8 @@ class State {
                 this.pastdirectives.push(this.directives[index]);
                 break;
             default:
-                this.directives.splice(this.pastdirectives.indexOf(this.directives[index]), 1);
                 this.directives[index].pass();
-                this.pastdirectives.push(this.directives[index]);
+                this.pastdirectives[this.pastdirectives.indexOf(this.directives[index])].pass();
                 break;
         }
     }
@@ -441,9 +465,8 @@ class State {
                 this.pastdirectives.push(this.directives[index]);
                 break;
             default:
-                this.directives.splice(this.pastdirectives.indexOf(this.directives[index]), 1);
-                this.directives[index].fail();
-                this.pastdirectives.push(this.directives[index]);
+                this.directives[index].pass();
+                this.pastdirectives[this.pastdirectives.indexOf(this.directives[index])].fail();
                 break;
         }
     }

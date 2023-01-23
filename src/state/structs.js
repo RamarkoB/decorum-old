@@ -118,7 +118,7 @@ class SpeakersList {
         this.listSpeakers[i].addDelegate(del);
     }
 
-    removeDelegate(i, del) {
+    removeDelegate(i) {
         this.listSpeakers[i].removeDelegate();
     }
 
@@ -245,37 +245,6 @@ class Timer {
     }
 }
 
-//Directive Classes
-class Directive {
-    constructor() {
-        this.name = null;
-        this.status = Vote.NA;
-    }
-
-    pass() {
-        this.status = Vote.Passed;
-    }
-
-    fail() {
-        this.status = Vote.Failed;
-    }
-
-    reset() {
-        this.status = Vote.NA;
-    }
-
-    getName() {
-        return this.name;
-    }
-}
-
-const DirOrder = {
-    introduced: "Introduced",
-    revIntroduced: "Reverse Introduced",
-    alphabetical: "Alphabetical",
-    revAlphabetical: "Reverse Alphabetical"
-}
-
 //Page
 const Page = {
     delegates: "delegates",
@@ -285,4 +254,4 @@ const Page = {
     unmod: "unmod",
 }
 
-export {Attendence, Vote, Delegate, Speaker, SpeakersList, Status, Timer, Page, Directive, DirOrder};
+export {Attendence, Vote, Delegate, Speaker, SpeakersList, Status, Timer, Page};

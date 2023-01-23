@@ -1,8 +1,53 @@
 import { state } from "./../state/state"
-import { MakeMotionDiv, MotionDiv, DirectiveDiv, stringify } from './motiondivs';
+import { MakeMotionDiv, MotionDiv } from './motiondivs';
+import { MakeDirectiveDiv, DirectiveDiv, DirSpeakerDiv } from "./directivedivs"
 import { Attendence, Status, Vote } from './../state/structs';
 import { Motions } from '../state/motions';
 import { useState } from 'react';
+
+function stringify(num) {
+    return (num < 10 ? "0" + String(num) : String(num));
+}
+
+//Module to vote on a Directive or Motion
+function VoteModule(props) {
+    function pass() {
+        if (props.type === "motion"){
+            state.passMotion(props.index);
+        } else if (props.type === "directive") {
+            state.passDirective(props.index);
+        }
+    }
+
+    function fail() {
+        if (props.type === "motion"){
+            state.failMotion(props.index);
+        } else if (props.type === "directive") {
+            state.failDirective(props.index);
+        }
+    }
+
+    function remove() {
+        if (props.type === "motion"){
+            state.removeMotion(props.index);
+        } else if (props.type === "directive") {
+            state.removeDirective(props.index);
+        }
+    }
+
+
+    return  <ul className="list-inline pass-module">
+                <li className="list-inline-item">
+                    <button type="button" className="btn btn-demo" onClick={pass}>Pass</button>
+                </li>
+                <li className="list-inline-item">
+                    <button type="button" className="btn btn-demo" onClick={fail}>Fail</button>
+                </li>
+                <li className="list-inline-item">
+                    <button type="button" className="btn btn-demo" onClick={remove}>Remove</button>
+                </li>
+            </ul>
+}
 
 //Small Components
 function DelegateDiv(props) {
@@ -53,21 +98,6 @@ function SpeakerDiv(props) {
                     {presentDels}
               </div>
           </div>
-}
-
-function DirSpeakerDiv(props) {
-    return  <div className={props.status === Vote.Failed? "card mini pink" : "card mini"}>
-                <p>{props.dir.getName()}</p>
-                <div className={"card mini speaker"}>
-                      <p>Hello</p>
-                </div>
-                <div className={"card mini speaker"}>
-                      <p>Hello</p>
-                </div>
-                <div className={"card mini speaker"}>
-                      <p>Hello</p>
-                </div>
-            </div>
 }
 
 function TimerDiv() {
@@ -229,31 +259,6 @@ function SpeakersPage() {
 }
 
 function VotingPage() {
-    // function lastSpeaker() {
-    //     state.lastSpeaker();
-    //   }
-    
-    //   function nextSpeaker() {
-    //     state.nextSpeaker();
-    //   }
-    
-    //   const speakers = state.getSpeakers().map((speaker, index) =>
-    //   <DirSpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
-    // );
-    
-    //   const speakerChange = <ul className="list-inline">
-    //                             <li className="list-inline-item">
-    //                                 <button type="button" className="btn btn-demo" onClick={lastSpeaker}>Last Speaker</button>
-    //                             </li>
-    //                             <li className="list-inline-item">
-    //                                 <button type="button" className="btn btn-demo" onClick={nextSpeaker}>Next Speaker</button>
-    //                             </li>
-    //                         </ul>
-    
-    //   const speakerNum = state.speakers ?
-    //     <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>:
-    //     <h1> No Speakers List</h1>;
-
     const directives = state.getDirectives().map((dir, index) =>
                     <DirSpeakerDiv dir={dir} status={dir.status} num={state.currentMotion.numSpeakers} key={index}/>
     );
@@ -281,7 +286,6 @@ function DirectivesPage() {
         console.log(
             state.pastdirectives.filter((dir) => {if (dir.status === Vote.Passed) {return true;} return false;})
         );
-
     }
 
     function failedDirectives() {
@@ -291,23 +295,11 @@ function DirectivesPage() {
     }
 
     return  [<div id="directivesList" className="left side col-4" key="directivesList">
-                <ul >
-                    <li className='dirButton'>
-                        <button className="btn btn-demo" onClick={() => state.addDirective()}>Add Directive</button>
-                    </li>
-                    <li className='dirButton'>
-                        <button className="btn btn-demo" onClick={() => state.clearDirectives()}>Clear Directives</button>
-                    </li>
-                    <li className='dirButton'>
-                        <button className="btn btn-demo" onClick={pastDirectives}>All Past Directives</button>
-                    </li>
-                    <li className='dirButton'>
-                        <button className="btn btn-demo" onClick={passedDirectives}>Passed Directives</button>
-                    </li>
-                    <li className='dirButton'>
-                        <button className="btn btn-demo" onClick={failedDirectives}>Failed Directives</button>
-                    </li>
-                </ul>
+                <MakeDirectiveDiv />
+                <button className="btn btn-demo" onClick={() => state.clearDirectives()}>Clear Directives</button>
+                <button className="btn btn-demo" onClick={pastDirectives}>All Past Directives</button>
+                <button className="btn btn-demo" onClick={passedDirectives}>Passed Directives</button>
+                <button className="btn btn-demo" onClick={failedDirectives}>Failed Directives</button>
             </div>,
             <div id="directivesMain" className="side col-8" key="directivesMain">
                 {directives}
@@ -337,4 +329,5 @@ function MotionsPage() {
           <div id="motionsMain" className="side col-8" key="motionsMain">{motions}</div>]
 }
 
+export { VoteModule, stringify };
 export {DelegatePage, UnmodPage, SpeakersPage, DirectivesPage, MotionsPage, VotingPage};

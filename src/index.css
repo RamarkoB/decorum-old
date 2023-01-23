@@ -71,10 +71,6 @@ h3 {
     border-right: 3px solid black;
 }
 
-.notready {
-    opacity: 50%;
-}
-
 /* Dropdown CSS */
 .dropdown-menu {
     border: 2px black solid;
@@ -268,9 +264,17 @@ input:invalid {
 
 
 /* Motions CSS */
-.add-motion {
+#name-directive {
+    width: 100%;
+    text-align: center;
+    padding: 0;
+    margin-left: 0;
+}
+
+.add-motion, #directivesList #add-directive {
     width: 100%;
     padding: 0.5rem 2rem !important;
+    margin: 0;
     border-radius: 0!important;
     border: none;
     border-top:  black solid 2px;
@@ -281,7 +285,7 @@ input:invalid {
     font-size: 14px; 
 }
 
-.add-motion:hover {
+.add-motion:hover, #add-directive:hover {
     border-top:  black solid 2px;
 }
 

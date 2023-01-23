@@ -2,51 +2,9 @@
 import React, { useState } from 'react';
 import { Motions, ExtendMod, ExtendUnmod, Voting, Introduce, Unmod, StrawPoll, RoundRobin, Mod } from '../state/motions';
 import { Vote } from "../state/structs"
+import { DirOrder } from "../state/directives";
+import { stringify, VoteModule } from "./components"
 import { state } from "./../state/state"
-
-function stringify(num) {
-    return (num < 10 ? "0" + String(num) : String(num));
-}
-
-//Module to vote on a Directive or Motion
-function VoteModule(props) {
-    function pass() {
-        if (props.type === "motion"){
-            state.passMotion(props.index);
-        } else if (props.type === "directive") {
-            state.passDirective(props.index);
-        }
-    }
-
-    function fail() {
-        if (props.type === "motion"){
-            state.failMotion(props.index);
-        } else if (props.type === "directive") {
-            state.failDirective(props.index);
-        }
-    }
-
-    function remove() {
-        if (props.type === "motion"){
-            state.removeMotion(props.index);
-        } else if (props.type === "directive") {
-            state.removeDirective(props.index);
-        }
-    }
-
-
-    return  <ul className="list-inline pass-module">
-                <li className="list-inline-item">
-                    <button type="button" className="btn btn-demo" onClick={pass}>Pass</button>
-                </li>
-                <li className="list-inline-item">
-                    <button type="button" className="btn btn-demo" onClick={fail}>Fail</button>
-                </li>
-                <li className="list-inline-item">
-                    <button type="button" className="btn btn-demo" onClick={remove}>Remove</button>
-                </li>
-            </ul>
-}
 
 
 //Input Divs
@@ -111,7 +69,7 @@ function MakeVotingDiv(props) {
         if (isNaN(Number(min)) || isNaN(Number(sec)) || isNaN(Number(speakers))) {
             console.log("we got a not a number ovah here!");
         } else {
-            state.addMotion(new Voting(props.delegate, Number(speakers), Number(60 * min + sec)));
+            state.addMotion(new Voting(props.delegate, DirOrder.introduced, Number(speakers), Number(60 * min + sec)));
             props.setDel(null);
             setMin("");
             setSec("");
@@ -383,27 +341,5 @@ function MotionDiv(props) {
             </div>
 }
 
-//Directive Div
-function DirectiveDiv(props){
-    function statusClass() {
-        if (props.status === Vote.Passed) {
-            return "card directive green";
-        } else if (props.status === Vote.Failed) {
-            return "card directive pink";
-        } else {
-            return "card directive";
-        }
-    }
-
-    function updateName(name){
-        props.dir.name = name;
-    }
-
-    return  <div className={statusClass()}>
-                <h3><input placeholder="New Directive..." onChange={(e)=>updateName(e.target.value)}/></h3>
-                <VoteModule index={props.index} type={"directive"}/>
-            </div>
-}
-
 //Exports
-export { MakeMotionDiv, MotionDiv, DirectiveDiv, stringify};
+export { MakeMotionDiv, MotionDiv};
