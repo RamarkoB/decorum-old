@@ -384,8 +384,13 @@ input:invalid {
 #dirSpeakersList > .card > .card {
     margin: 0;
 }
+
 #dirSpeakersList > .card > .card:not(:first-of-type) {
     margin-top: 5px;
+}
+
+#dirSpeakersList .dropdown:not(:last-of-type) {
+    padding-bottom: 10px;
 }
 
 button {

@@ -1,5 +1,5 @@
 import { Attendence, Delegate, SpeakersList, Status, Timer, Page} from "./structs";
-import { Directive, DirOrder} from "./directives";
+import { DirOrder, DirState} from "./directives";
 import { Motions } from "./motions";
 
 //State
@@ -24,9 +24,39 @@ class State {
         this.page = Page.delegates;
 
         //Directives
-        this.directives = [];
-        this.pastdirectives = [];
+        this.dirState = new DirState();
     }
+    
+    //Page Methods
+    toPage(page) {
+        this.page = page;
+    }
+
+    getPage(){
+        return this.page;
+    }
+
+    getOtherPages() {
+        if (this.currentMotion) {
+            return Object.values(Page)
+                    .filter(page => {if (page === this.page){return false;} return true;})
+                    .filter(page => {switch (this.currentMotion.type) {
+                    case Motions.Mod:
+                        if (page === Page.unmod) {return false} return true;
+                    case Motions.Unmod:
+                        if (page === Page.speakers) {return false} return true;
+                    case Motions.Voting:
+                        if (page === Page.unmod) {return false} return true;
+                    default:
+                        if (page === Page.speakers || page === Page.unmod) {return false} return true;
+                    }});
+        } else {
+            return Object.values(Page)
+                    .filter(page => {if (page === this.page){return false;} return true;})
+                    .filter(page => {if (page === Page.speakers || page === Page.unmod) {return false} return true;});
+        }
+    }
+
 
     //State Delegate Methods
     getDelegates(){
@@ -114,13 +144,25 @@ class State {
     }
 
     nextSpeaker(){
-        this.currentSpeaker = this.speakers.nextSpeaker();
+        switch (state.currentMotion.type) {
+            case Motions.Voting: 
+                this.dirState.nextSpeaker();
+                console.log(state.currentMotion.type);
+                break;
+            default: 
+                this.speakers.nextSpeaker();
+        }
         this.resetTimer();
         // socket.emit("nextSpeaker");
     }
 
     lastSpeaker(){
-        this.currentSpeaker = this.speakers.lastSpeaker();
+        switch (state.currentMotion.type) {
+            case Motions.Voting: this.dirState.lastSpeaker();
+            break;
+            default: this.speakers.lastSpeaker();
+        }
+        this.resetTimer();
         // socket.emit("nextSpeaker");
     }
 
@@ -142,7 +184,6 @@ class State {
         } else {
             return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
         }
-
     }
 
     updateSpeakers(cmd, args){
@@ -217,34 +258,25 @@ class State {
         }
     }
 
-    //Page Methods
-    toPage(page) {
-        this.page = page;
+    //Generate Motion Methods
+    genUnmod(minutes, seconds) {
+        this.setTimer(minutes, seconds);
+        this.pauseTimer();
+        this.toPage(Page.unmod);
     }
 
-    getPage(){
-        return this.page;
+    genMod(numSpeakers, speakingTime){
+        this.setTimer(0, speakingTime);
+        this.pauseTimer();
+        this.makeSpeakersList(numSpeakers);
+        this.toPage(Page.speakers);
     }
 
-    getOtherPages() {
-        if (this.currentMotion) {
-            return Object.values(Page)
-                    .filter(page => {if (page === this.page){return false;} return true;})
-                    .filter(page => {switch (this.currentMotion.type) {
-                    case Motions.Mod:
-                        if (page === Page.unmod) {return false} return true;
-                    case Motions.Unmod:
-                        if (page === Page.speakers) {return false} return true;
-                    case Motions.Voting:
-                        if (page === Page.unmod) {return false} return true;
-                    default:
-                        if (page === Page.speakers || page === Page.unmod) {return false} return true;
-                    }});
-        } else {
-            return Object.values(Page)
-                    .filter(page => {if (page === this.page){return false;} return true;})
-                    .filter(page => {if (page === Page.speakers || page === Page.unmod) {return false} return true;});
-        }
+    genVoting(numSpeakers, speakingTime) {
+        this.setTimer(0, speakingTime);
+        this.pauseTimer();
+        this.makeDirSpeakersList(numSpeakers);
+        this.toPage(Page.directives);
     }
 
     //Motion Methods
@@ -353,8 +385,7 @@ class State {
                 this.genMod(motion.numSpeakers, motion.speakingTime);
                 break;
             case Motions.Voting:
-                this.toPage(Page.directives);
-                this.makeDirSpeakersList(motion.numSpeakers);
+                this.genVoting(motion.numSpeakers, motion.speakingTime);
                 break;
             case Motions.Introduce:
                 this.toPage(Page.directives);
@@ -388,95 +419,47 @@ class State {
         this.motions = [];
     }
 
-
-    genUnmod(minutes, seconds) {
-        this.setTimer(minutes, seconds);
-        this.pauseTimer();
-        this.toPage(Page.unmod);
-    }
-
-    genMod(numSpeakers, speakingTime){
-        this.setTimer(0, speakingTime);
-        this.pauseTimer();
-        this.makeSpeakersList(numSpeakers);
-        this.toPage(Page.speakers);
-    }
-
     //Directive Methods
     addDirective(name) {
-        const dir = name?
-            new Directive(name):
-            new Directive();
-
-        this.directives.push(dir);
-    }
-
-    getDirectives(order = DirOrder.introduced) {
-        switch (order) {
-            case DirOrder.introduced:
-                return this.directives;
-            case DirOrder.revIntroduced:
-                return this.directives.reverse();
-            case DirOrder.alphabetical:
-                return this.directives.sort((a,b) => {
-                    if (a.name > b.name) { return 1; }
-                    else if (a.name < b.name) { return -1;}
-                    else {return 0;}
-                });
-            case DirOrder.revAlphabetical:
-                return this.directives.sort((a,b) => {
-                    if (a.name > b.name) { return 1; }
-                    else if (a.name < b.name) { return -1;}
-                    else {return 0;}
-                }).reverse();
-
-            //no default
-        }
-    }
-
-    makeDirSpeakersList(num){
-       this.speakers = {};
-       this.getDirectives(this.order)
-            .forEach(((dir) => {this.speakers[dir] = new SpeakersList(num)}));
-       console.log(this.speakers); 
-    }
-
-    getDirSpeakers(dir) {
-        return this.speakers[dir];
-    }
-
-    passDirective(index){
-        switch (this.pastdirectives.indexOf(this.directives[index])) {
-            case -1:
-                this.directives[index].pass();
-                this.pastdirectives.push(this.directives[index]);
-                break;
-            default:
-                this.directives[index].pass();
-                this.pastdirectives[this.pastdirectives.indexOf(this.directives[index])].pass();
-                break;
-        }
-    }
-
-    failDirective(index){
-        switch (this.pastdirectives.indexOf(this.directives[index])) {
-            case -1:
-                this.directives[index].fail();
-                this.pastdirectives.push(this.directives[index]);
-                break;
-            default:
-                this.directives[index].pass();
-                this.pastdirectives[this.pastdirectives.indexOf(this.directives[index])].fail();
-                break;
-        }
+        this.dirState.add(name);
     }
 
     removeDirective(index){
-        this.directives.splice(index, 1);
+        this.dirState.remove(index);
+    }
+
+    passDirective(index){
+        this.dirState.pass(index);
+    }
+
+    failDirective(index){
+        this.dirState.fail(index);
+    }
+
+
+    getDirectives(order = DirOrder.introduced) {
+        return this.dirState.getCurrDirectives();
+    }
+
+    getPastDirectives(order = DirOrder.introduced) {
+        return this.dirState.getPastDirectives(order);
+    }
+
+    getPassedDirectives(order = DirOrder.introduced) {
+        return this.dirState.getPassedDirectives(order);
+    }
+
+    getFailedDirectives(order = DirOrder.introduced) {
+        return this.dirState.getFailedDirectives(order);
     }
 
     clearDirectives(){
-        this.directives = [];
+        this.dirState.clear()
+    } 
+
+
+    makeDirSpeakersList(num){
+        this.dirState.makeDirSpeakersList(num);
     }
 }
 
@@ -529,5 +512,8 @@ function genDelegates(num){
 //         'Vivienne Yeda Apopo',
 //         'Yufnalis N. Okubo'];
 const state = new State(genDelegates(20));
+state.addDirective("Hello");
+state.addDirective("Hi");
+state.addDirective("Bi");
 
 export {State, state, genDelegates };

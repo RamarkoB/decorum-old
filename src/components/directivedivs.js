@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VoteModule } from "./components"
+import { VoteModule, SpeakerDiv } from "./components"
 import { state } from '../state/state';
 import { Vote } from "../state/structs"
 
@@ -42,10 +42,15 @@ function DirectiveDiv(props){
             </div>
 }
 
-function DirSpeakerDiv(props) {
-    return  <div className={props.status === Vote.Failed? "card mini pink" : "card mini"}>
+function DirVoteSpeakDiv(props) {
+    const speakers = props.dir.speakers.speakers.map((speaker, index) => 
+        <SpeakerDiv parent={props.dir} spoken={speaker.hasSpoken()} name={props.dir.getSpeaker(index)} index={index} key={index}/>
+    );
+
+    return  <div className='card mini'>
                 <p>{props.dir.getName()}</p>
+                {speakers}
             </div>
 }
 
-export { MakeDirectiveDiv, DirectiveDiv, DirSpeakerDiv };
+export { MakeDirectiveDiv, DirectiveDiv, DirVoteSpeakDiv };

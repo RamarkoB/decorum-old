@@ -1,6 +1,7 @@
 import { state } from "./../state/state"
+import { DirOrder } from "../state/directives";
 import { MakeMotionDiv, MotionDiv } from './motiondivs';
-import { MakeDirectiveDiv, DirectiveDiv, DirSpeakerDiv } from "./directivedivs"
+import { MakeDirectiveDiv, DirectiveDiv, DirVoteSpeakDiv } from "./directivedivs"
 import { Attendence, Status, Vote } from './../state/structs';
 import { Motions } from '../state/motions';
 import { useState } from 'react';
@@ -73,8 +74,8 @@ function SpeakerDiv(props) {
     function changeDel(del){
         const index = state.getDelegates().indexOf(del);
         
-        state.removeSpeaker(props.index);
-        state.addSpeaker(props.index, index);
+        props.parent.removeSpeaker(props.index);
+        props.parent.addSpeaker(props.index, index);
     }
 
     const presentDels = (state.getPresent().length > 0) ?
@@ -90,7 +91,7 @@ function SpeakerDiv(props) {
 
   return  <div className="dropdown">
               <button data-bs-toggle="dropdown">
-                  <div className={props.spoken === "yes"? "card mini speaker pink" : "card mini speaker"}>
+                  <div className={props.spoken? "card mini speaker pink" : "card mini speaker"}>
                       <p>{props.name}</p>
                   </div>
               </button>
@@ -224,7 +225,7 @@ function UnmodPage() {
 
 function SpeakersPage() {
     const speakers = state.getSpeakers().map((speaker, index) =>
-    <SpeakerDiv spoken={speaker.hasSpoken() ? "yes" : "no"} name={state.getSpeaker(index)} index={index} key={index}/>
+    <SpeakerDiv parent={state} spoken={speaker.hasSpoken()} name={state.getSpeaker(index)} index={index} key={index}/>
     );
 
     const speakerNum = state.speakers?
@@ -252,6 +253,7 @@ function SpeakersPage() {
                 {speakers}
             </div>,
             <div id="modMain" className="side col-8" key="modMain">
+                <h1>{state.currentMotion.topic}</h1>
                 <TimerDiv />
                 {speakerChange}
                 {speakerNum}
@@ -259,15 +261,38 @@ function SpeakersPage() {
 }
 
 function VotingPage() {
-    const directives = state.getDirectives().map((dir, index) =>
-                    <DirSpeakerDiv dir={dir} status={dir.status} num={state.currentMotion.numSpeakers} key={index}/>
+    const directives = state.getDirectives(DirOrder.alphabetical).map((dir, index) =>
+        <DirVoteSpeakDiv dir={dir} status={dir.status} index={index} key={index}/>
     );
+
+    // const speakerNum = state.speakers?
+    // <h1>{Math.min(state.speakers.numSpeakers, state.speakers.speakerNum + 1)} / {speakers.length} Speakers</h1>:
+    // <h1> No Speakers List</h1>;
+
+    const speakerChange = <ul className="list-inline">
+                            <li className="list-inline-item">
+                                <button type="button" className="btn btn-demo" onClick={lastSpeaker}>Last Speaker</button>
+                            </li>
+                            <li className="list-inline-item">
+                                <button type="button" className="btn btn-demo" onClick={nextSpeaker}>Next Speaker</button>
+                            </li>
+                        </ul>
+
+    function lastSpeaker() {
+        state.lastSpeaker();
+    }
+
+    function nextSpeaker() {
+        state.nextSpeaker();
+    }
     
     return  [<div id="dirSpeakersList" className="left side col-4" key="speakersList">
                 {directives}
             </div>,
             <div id="dirSpeakersMain" className="side col-8" key="modMain">
                 <TimerDiv />
+                {speakerChange}
+                {/* {speakerNum} */}
             </div>]
 }
 
@@ -329,5 +354,5 @@ function MotionsPage() {
           <div id="motionsMain" className="side col-8" key="motionsMain">{motions}</div>]
 }
 
-export { VoteModule, stringify };
-export {DelegatePage, UnmodPage, SpeakersPage, DirectivesPage, MotionsPage, VotingPage};
+export { VoteModule, SpeakerDiv, stringify };
+export { DelegatePage, UnmodPage, SpeakersPage, DirectivesPage, MotionsPage, VotingPage };

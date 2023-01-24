@@ -106,24 +106,27 @@ class Speaker {
 class SpeakersList {
     constructor(numSpeakers){
         this.numSpeakers = numSpeakers;
-        let listSpeakers = [];
+        this.speakers = [];
         for (let i = 0; i < this.numSpeakers; i ++) {
-            listSpeakers.push(new Speaker());
+            this.speakers.push(new Speaker());
         }
-        this.listSpeakers = listSpeakers;
         this.speakerNum = 0;
     }
 
     addDelegate(i, del) {
-        this.listSpeakers[i].addDelegate(del);
+        this.speakers[i].addDelegate(del);
     }
 
     removeDelegate(i) {
-        this.listSpeakers[i].removeDelegate();
+        this.speakers[i].removeDelegate();
     }
 
     getName(num) {
-        return this.listSpeakers[num].getName();
+        return this.speakers[num].getName();
+    }
+
+    getSpeakers(){
+        return this.speakers;
     }
 
     hasNext(){
@@ -132,17 +135,17 @@ class SpeakersList {
 
     nextSpeaker() {
         if (this.speakerNum < this.numSpeakers) {
-            this.listSpeakers[this.speakerNum].speak();
+            this.speakers[this.speakerNum].speak();
             this.speakerNum++;
-            return this.listSpeakers[this.speakerNum];
+            return this.speakers[this.speakerNum];
         }
     }
 
     lastSpeaker() {
         if (this.speakerNum > 0) {
             this.speakerNum--;
-            this.listSpeakers[this.speakerNum].unspeak();
-            return this.listSpeakers[this.speakerNum];
+            this.speakers[this.speakerNum].unspeak();
+            return this.speakers[this.speakerNum];
         }
     }
 }
