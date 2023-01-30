@@ -2,7 +2,7 @@ import { state } from "./../state/state"
 import { DirOrder } from "../state/directives";
 import { MakeMotionDiv, MotionDiv } from './motiondivs';
 import { MakeDirectiveDiv, DirectiveDiv, DirVoteSpeakDiv } from "./directivedivs"
-import { Attendence, Status, Vote } from './../state/structs';
+import { Attendence, Page, Status } from './../state/structs';
 import { Motions } from '../state/motions';
 import { useState } from 'react';
 
@@ -261,7 +261,7 @@ function SpeakersPage() {
 }
 
 function VotingPage() {
-    const directives = state.getDirectives(DirOrder.alphabetical).map((dir, index) =>
+    const directives = state.getDirectives(DirOrder.introduced).map((dir, index) =>
         <DirVoteSpeakDiv dir={dir} status={dir.status} index={index} key={index}/>
     );
 
@@ -301,30 +301,34 @@ function DirectivesPage() {
         <DirectiveDiv dir={dir} status={dir.status} index={index} key={index}/>
     );
 
-    function pastDirectives() {
-        console.log(
-            state.pastdirectives
-        );
-    }
+    // function pastDirectives() {
+    //     console.log(state.getPastDirectives());
+    // }
 
-    function passedDirectives() {
-        console.log(
-            state.pastdirectives.filter((dir) => {if (dir.status === Vote.Passed) {return true;} return false;})
-        );
-    }
+    // function passedDirectives() {
+    //     console.log(state.getPassedDirectives());
+    // }
 
-    function failedDirectives() {
-        console.log(
-            state.pastdirectives.filter((dir) => {if (dir.status === Vote.Failed) {return true;} return false;})
-        );
+    // function failedDirectives() {
+    //     console.log(state.getFailedDirectives());
+    // }
+
+    function voteOnDirective() {
+        state.genVoting(state.currentMotion.numSpeakers, state.currentMotion.speakingTime);
+        state.toPage(Page.speakers);
     }
 
     return  [<div id="directivesList" className="left side col-4" key="directivesList">
                 <MakeDirectiveDiv />
+                {state.getCurrentMotionType() === Motions.Voting ?
+                    <button className="btn btn-demo" onClick={voteOnDirective}>Vote on Directives</button>:
+                    <div></div>
+                }
+
                 <button className="btn btn-demo" onClick={() => state.clearDirectives()}>Clear Directives</button>
-                <button className="btn btn-demo" onClick={pastDirectives}>All Past Directives</button>
-                <button className="btn btn-demo" onClick={passedDirectives}>Passed Directives</button>
-                <button className="btn btn-demo" onClick={failedDirectives}>Failed Directives</button>
+                {/* <button className="btn btn-demo notready" onClick={pastDirectives}>All Past Directives</button>
+                <button className="btn btn-demo notready" onClick={passedDirectives}>Passed Directives</button>
+                <button className="btn btn-demo notready" onClick={failedDirectives}>Failed Directives</button> */}
             </div>,
             <div id="directivesMain" className="side col-8" key="directivesMain">
                 {directives}

@@ -54,6 +54,10 @@ h3 {
     font-size: calc(1.5rem + .6vw);
 }
 
+.committee {
+    cursor: pointer;
+}
+
 .side {
     text-align: center;
     height: 100%;
@@ -285,8 +289,10 @@ input:invalid {
     font-size: 14px; 
 }
 
-.add-motion:hover, #add-directive:hover {
+.add-motion:hover, #directivesList #add-directive:hover {
     border-top:  black solid 2px;
+    color: black;
+    background-color: transparent;
 }
 
 .motion .dropdown {

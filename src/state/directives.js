@@ -1,4 +1,4 @@
-import { Vote, SpeakersList } from "./structs";
+import { Vote, Speaker } from "./structs";
 import { state } from "./state";
 
 //Directive Classes
@@ -30,7 +30,10 @@ class Directive {
     }
 
     genSpeakersList(num) {
-        this.speakers = new SpeakersList(num * 2);
+        this.speakers = [];
+        for (let i = 0; i < num * 2; i ++) {
+            this.speakers.push(new Speaker());
+        }
     }
 
     getSpeakersList(){
@@ -41,12 +44,12 @@ class Directive {
         if (this.speakers === null){
             return [];
         } else {
-            return this.speakers.speakers;
+            return this.speakers;
         }
     }
 
     getSpeaker(num){
-        if (this.getSpeakersList().speakers[num].hasDel) {
+        if (this.speakers[num].hasDel) {
             return this.getSpeakersList().speakers[num].getDelegate().getName();
         } else {
             switch (num % 2) {
@@ -84,11 +87,10 @@ class DirState {
     }
 
     //individual directive methods
-    add(name) {
-        const dir = name?
-            new Directive(name):
-            new Directive();
-
+    add(name, num) {
+        const dir = num ? 
+            new Directive(name, num) : 
+            new Directive(name);
         this.currDirectives.push(dir);
     }
 
@@ -97,27 +99,27 @@ class DirState {
     }
 
     pass(index){
-        switch (this.pastdirectives.indexOf(this.currDirectives[index])) {
+        switch (this.pastDirectives.indexOf(this.currDirectives[index])) {
             case -1:
                 this.currDirectives[index].pass();
-                this.pastdirectives.push(this.currDirectives[index]);
+                this.pastDirectives.push(this.currDirectives[index]);
                 break;
             default:
                 this.currDirectives[index].pass();
-                this.pastdirectives[this.pastdirectives.indexOf(this.currDirectives[index])].pass();
+                this.pastDirectives[this.pastDirectives.indexOf(this.currDirectives[index])].pass();
                 break;
         }
     }
 
     fail(index){
-        switch (this.pastdirectives.indexOf(this.currDirectives[index])) {
+        switch (this.pastDirectives.indexOf(this.currDirectives[index])) {
             case -1:
                 this.currDirectives[index].fail();
-                this.pastdirectives.push(this.currDirectives[index]);
+                this.pastDirectives.push(this.currDirectives[index]);
                 break;
             default:
                 this.currDirectives[index].pass();
-                this.pastdirectives[this.pastdirectives.indexOf(this.currDirectives[index])].fail();
+                this.pastDirectives[this.pastDirectives.indexOf(this.currDirectives[index])].fail();
                 break;
         }
     }
@@ -187,13 +189,16 @@ class DirState {
 
     clear(){
         this.currDirectives = [];
+        this.speakers = null;
+        this.numspeakers = null;
+        this.speakerNum = null;
     }
 
 
     //directive speaker methods
     makeDirSpeakersList(num, order = DirOrder.introduced){
         this.currDirectives.forEach((dir) => {dir.genSpeakersList(num)})
-        this.speakers = this.getCurrDirectives(order).map((dir) => dir.getSpeakersList().speakers).flat(1);
+        this.speakers = this.getCurrDirectives(order).map((dir) => dir.speakers).flat(1);
         this.numSpeakers = this.speakers.length;
         this.speakerNum = 0;
     }

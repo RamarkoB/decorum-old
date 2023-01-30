@@ -1,6 +1,7 @@
 import { Attendence, Delegate, SpeakersList, Status, Timer, Page} from "./structs";
 import { DirOrder, DirState} from "./directives";
 import { Motions } from "./motions";
+import committees from "./committees";
 
 //State
 class State {
@@ -147,7 +148,6 @@ class State {
         switch (state.currentMotion.type) {
             case Motions.Voting: 
                 this.dirState.nextSpeaker();
-                console.log(state.currentMotion.type);
                 break;
             default: 
                 this.speakers.nextSpeaker();
@@ -174,15 +174,15 @@ class State {
         if (this.speakers === null){
             return [];
         } else {
-            return this.speakers.listSpeakers;
+            return this.speakers.speakers;
         }
     }
 
     getSpeaker(num){
-        if (this.getSpeakersList().listSpeakers[num].getDelegate() === null) {
+        if (this.getSpeakersList().speakers[num].getDelegate() === null) {
             return "Speaker " + (num + 1);
         } else {
-            return this.getSpeakersList().listSpeakers[num].getDelegate().getName();
+            return this.getSpeakersList().speakers[num].getDelegate().getName();
         }
     }
 
@@ -403,7 +403,6 @@ class State {
                 break;
         }
 
-        console.log(this.currentMotion);
         this.clearMotions();
     }
 
@@ -421,7 +420,10 @@ class State {
 
     //Directive Methods
     addDirective(name) {
-        this.dirState.add(name);
+        switch (this.getCurrentMotionType()) {
+            case Motions.Voting: this.dirState.add(name, this.currentMotion.numSpeakers); break;
+            default: this.dirState.add(name);
+        }
     }
 
     removeDirective(index){
@@ -486,34 +488,10 @@ function genDelegates(num){
     return names;
 }
 
-// let state;
-// const delNames = ['Alex Obtre Lumumba',
-//         'Amb. Ernest Niyokindi',
-//         'Amb. Francois Nkulikiyimfura',
-//         'Amb. Jean Tambu Mikuma',
-//         'Amb. Samwel Shelukundo',
-//         'Christophe Bazivamo',
-//         'Dr. Anthony L. Kafumbe',
-//         'Dr. James Otieno Jowi',
-//         'Dr. Kevit Desai',
-//         'Dr. Novat Twungubumwe',
-//         'Dr. Patrick Njoroge',
-//         'Emile Nguza Arao',
-//         'Eng. Steven D.M. Mlote',
-//         'H.E. Ms. Doreen Ruth Amule',
-//         'H.E. Prof. Judy Wakhungu',
-//         'Hon. Amb. Ezéchiel Nibigira',
-//         'Justice Nestor Kayobera',
-//         'Kenneth A. Bagamuhunda',
-//         'Lilian K. Mukoronia',
-//         'Muyambi Fortunate',
-//         'Prof. Gaspard Banyankimbona',
-//         'Rt. Hon Martin Ngoga',
-//         'Vivienne Yeda Apopo',
-//         'Yufnalis N. Okubo'];
-const state = new State(genDelegates(20));
-state.addDirective("Hello");
-state.addDirective("Hi");
-state.addDirective("Bi");
+let state;
 
-export {State, state, genDelegates };
+function setState(comm) {
+    state = new State(committees[comm]);
+}
+
+export {State, state, genDelegates, setState };

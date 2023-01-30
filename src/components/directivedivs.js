@@ -9,7 +9,6 @@ function MakeDirectiveDiv() {
 
     function addDirective() {
         state.addDirective(name);
-        console.log(state.getDirectives());
         setName("");
     }
 
@@ -43,7 +42,7 @@ function DirectiveDiv(props){
 }
 
 function DirVoteSpeakDiv(props) {
-    const speakers = props.dir.speakers.speakers.map((speaker, index) => 
+    const speakers = props.dir.getSpeakers().map((speaker, index) => 
         <SpeakerDiv parent={props.dir} spoken={speaker.hasSpoken()} name={props.dir.getSpeaker(index)} index={index} key={index}/>
     );
 

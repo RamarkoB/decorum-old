@@ -183,12 +183,13 @@ function MakeMotionDiv(props) {
 
     function getMotionInput() {
         switch (props.motion) {
-            case Motions.ExtendMod:     return <MakeExtendModDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
-            case Motions.ExtendUnmod:   return <MakeExtendUnmodDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
-            case Motions.Voting:        return <MakeVotingDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
-            case Motions.Unmod:         return <MakeUnmodDiv delegate={delegate} setDel={setDel} key="unmodInputs"/>;
-            case Motions.Mod:           return <MakeModDiv delegate={delegate} setDel={setDel} key="modInputs"/>;
-            case Motions.RoundRobin:    return <MakeRoundRobinDiv delegate={delegate} setDel={setDel} key="roundRobinInputs"/>;
+            case Motions.IntroduceVoting:   return <MakeVotingDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
+            case Motions.ExtendMod:         return <MakeExtendModDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
+            case Motions.ExtendUnmod:       return <MakeExtendUnmodDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
+            case Motions.Voting:            return <MakeVotingDiv delegate={delegate} setDel={setDel} key="votingInputs"/>;
+            case Motions.Unmod:             return <MakeUnmodDiv delegate={delegate} setDel={setDel} key="unmodInputs"/>;
+            case Motions.Mod:               return <MakeModDiv delegate={delegate} setDel={setDel} key="modInputs"/>;
+            case Motions.RoundRobin:        return <MakeRoundRobinDiv delegate={delegate} setDel={setDel} key="roundRobinInputs"/>;
             default:                    
                 return  <button className='btn add-motion' onClick={addMotion} key="button">
                             Add Motion
