@@ -1,0 +1,411 @@
+/* Header CSS */
+header {
+    border-bottom: 3px solid black;
+    top: 0;
+    position: sticky;
+    background-color: #FEF9F3;
+}
+
+.header {
+    width: fit-content;
+}
+
+.header-txt {
+    text-align: center;
+    padding-top: 27px;
+    padding-bottom: 17px;
+    letter-spacing: 10px; 
+    font-weight: bold;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+/* Footer CSS */
+footer {
+    text-align: center;
+    border-top: 3px solid black;
+    top: 0;
+}
+
+#footerDiv {
+    width: fit-content;
+    margin: auto;
+}
+
+/* Universal CSS */
+body {
+    background-color: #FEF9F3;
+    font-family: Jost;
+    overflow: hidden;
+}
+
+section {
+    min-height: calc(100% - 154px);
+    padding: 0px 12px;
+}
+
+a {
+    text-decoration: none;
+}
+
+h3 {
+    font-size: calc(1.5rem + .6vw);
+}
+
+.committee {
+    cursor: pointer;
+}
+
+.side {
+    text-align: center;
+    height: 100%;
+    padding: 10px;
+    overflow-y: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.side::-webkit-scrollbar  {
+    display: none;
+}
+
+.left {
+    border-right: 3px solid black;
+}
+
+/* Dropdown CSS */
+.dropdown-menu {
+    border: 2px black solid;
+    background: #FEF9F3;
+}
+
+.dropdown-item {
+    cursor: pointer;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    background-color: black;
+}
+
+.pass-module {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+/* Colors CSS */
+.pink {
+    background-color: pink!important;
+}
+
+.green {
+    background-color: #AFE1AF!important;
+}
+
+.grey-text {
+    color: grey!important;
+}
+
+.notready {
+    opacity: 50%;
+}
+
+
+/* Card CSS */
+.card {
+    background: inherit;
+    border: 2px solid black;
+    margin-bottom: 10px;
+}
+
+.card.mini p:not(.motion-input) {
+    color:black;
+    margin: 10px;
+    font-size: 100%;
+}
+
+p.motion-input:last-of-type {
+    margin: 0px 0px 10px;
+}
+
+.card.mini {
+    cursor: pointer;
+}
+
+.card:not(.mini) h3 {
+    margin-bottom: 0;
+}
+
+.card:not(.mini) {
+    margin: 0px 5px 15px;
+    border-radius: 1rem;
+    text-align: center;
+    background-color: inherit;
+    padding: 10px;
+}
+
+#delMain p {
+    margin-bottom: 0.5rem;
+}
+
+
+/* Timer CSS */
+.timerDiv {
+    margin: 15px 5px;
+    border-radius: 1rem;
+    border: black 2px solid;
+    text-align: center;
+}
+
+.timer {
+    text-transform: uppercase;
+    font-weight: 500;
+    width: fit-content;
+    margin: auto;
+    cursor: text;
+}
+
+.timer span {
+    font-size: 3rem;
+    margin-left: 0.8rem;
+}
+
+.timer span:first-of-type {
+    margin-left: 0;
+}
+
+.timer-inactive {
+    margin: 0;
+    color:gray;
+}
+
+.timer-active {
+    margin: 0;
+}
+
+.countdown-done {
+    background-color: pink;
+}
+
+.timer-text {
+    width:2.2ch;
+}
+
+.timer input {
+    width:2.2ch;
+    font-size: 3rem;
+    font-weight: 500;
+}
+
+
+/* Buttons and Input CSS */
+.btn:focus{
+    box-shadow: none;
+}
+
+.btn-demo {
+    padding: 0.5rem 2rem !important;
+    border-radius: 30rem !important;
+    background: black;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold !important;
+}
+
+.btn-demo:hover{
+    color: #fff;
+    background: rgb(100, 100, 100);
+}
+
+.btn-active {
+    color:black
+}
+
+.btn-timer-close {
+    position: relative;
+    float: right;
+    top: .5rem;
+    right: .5rem;
+    box-shadow: none;
+}
+
+.btn-close:focus {
+    box-shadow: none;
+}
+
+input {
+    border: none;
+    background-color: transparent;
+    display: inline;
+    text-align: right;
+    padding: none;
+    outline: none;
+}
+
+input:invalid {
+    color: red;
+}
+
+
+/* Unmod CSS */
+#unmodMain {
+    margin: auto;
+}
+
+#unmodMain #timer-min, #unmodMain #timer-sec {
+    font-size: 125px;
+}
+
+#unmodMain p {
+    font-size: 65px;
+}
+
+#unmodMain button {
+    font-size: 25px;
+}
+
+
+/* Motions CSS */
+#name-directive {
+    width: 100%;
+    text-align: center;
+    padding: 0;
+    margin-left: 0;
+}
+
+.add-motion, #directivesList #add-directive {
+    width: 100%;
+    padding: 0.5rem 2rem !important;
+    margin: 0;
+    border-radius: 0!important;
+    border: none;
+    border-top:  black solid 2px;
+    background: black;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold !important;
+    font-size: 14px; 
+}
+
+.add-motion:hover, #directivesList #add-directive:hover {
+    border-top:  black solid 2px;
+    color: black;
+    background-color: transparent;
+}
+
+.motion .dropdown {
+    border-top:  black solid 2px;
+}
+
+.motion-inputs {
+    border-top:  black solid 2px;
+}
+
+.motion-input {
+    font-size: 14px;
+    margin-bottom: 0;
+    text-transform: uppercase;
+}
+
+.motion-input input {
+    font-size: large;
+    width:2.5ch;
+    margin-left: 0.4ch;
+}
+
+.motion-input input:first-of-type {
+    margin-top: 10px;
+}
+
+.motion-text {
+    margin-bottom: 0;
+}
+
+.motion-text input {
+    font-size: x-large;
+    width:2.5ch;
+    margin-left: 0.4ch; 
+}
+
+.motion-text span {
+    font-size: x-large;
+    margin-left: 10px;
+}
+
+.propose-text {
+    margin-bottom: 0;
+}
+
+.mod-topic {
+    margin-top: 10px;
+}
+
+.speaker-paren {
+    margin-left: 0!important;
+}
+
+.speaker {
+    margin: 0;
+}
+
+#makemod-topic {
+    width: 100%;
+    text-align: center;
+    margin-left: 0;
+}
+
+/* Mods CSS */
+.dropdown-menu input {
+    width: 100%;
+    text-align: center;
+    border-bottom: black solid 2px;
+    padding-bottom: 8px;
+}
+
+/* Directives CSS */
+.directive input {
+    text-align: center;
+    width: 90%;
+}
+
+.dirButton {
+    display: block;
+}
+
+#directivesList button {
+    margin-bottom: 10px;
+}
+
+#dirSpeakersList > .card {
+    padding: 5px;
+}
+
+#dirSpeakersList > .card > p {
+    font-size: larger;
+    font-weight: bold;
+}
+
+#dirSpeakersList > .card > .card {
+    margin: 0;
+}
+
+#dirSpeakersList > .card > .card:not(:first-of-type) {
+    margin-top: 5px;
+}
+
+#dirSpeakersList .dropdown:not(:last-of-type) {
+    padding-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;   
+}
+
+#speakersList > .dropdown {
+    margin-bottom: 10px;
+}
