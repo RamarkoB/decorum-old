@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/decorum/static/css/main.21deb948.css",
+    "main.js": "/decorum/static/js/main.ccb61e06.js",
+    "static/js/787.28cb0dcd.chunk.js": "/decorum/static/js/787.28cb0dcd.chunk.js",
+    "static/media/bootstrap-icons.woff?": "/decorum/static/media/bootstrap-icons.6959d0d983ee318f8880.woff",
+    "static/media/bootstrap-icons.woff2?": "/decorum/static/media/bootstrap-icons.b2e5aab643c6f0fd2da6.woff2",
+    "index.html": "/decorum/index.html",
+    "main.21deb948.css.map": "/decorum/static/css/main.21deb948.css.map",
+    "main.ccb61e06.js.map": "/decorum/static/js/main.ccb61e06.js.map",
+    "787.28cb0dcd.chunk.js.map": "/decorum/static/js/787.28cb0dcd.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.21deb948.css",
+    "static/js/main.ccb61e06.js"
+  ]
+}
